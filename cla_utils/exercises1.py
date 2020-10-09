@@ -22,6 +22,7 @@ def basic_matvec(A, x):
     :return b: m-dimensional numpy array
     """
     print("hello world")
+    print("This is a branch")
 
     raise NotImplementedError
 
