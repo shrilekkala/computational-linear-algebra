@@ -21,6 +21,7 @@ def basic_matvec(A, x):
 
     :return b: m-dimensional numpy array
     """
+    print("hello world")
 
     raise NotImplementedError
 
