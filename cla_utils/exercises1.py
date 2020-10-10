@@ -106,6 +106,7 @@ def time_matvecs():
     print("Timing for numpy matvec")
     print(timeit.Timer(timeable_numpy_matvec).timeit(number=1))
 
+time_matvecs()
 
 def rank2(u1, u2, v1, v2):
     """
