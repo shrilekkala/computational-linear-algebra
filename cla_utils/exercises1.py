@@ -54,8 +54,17 @@ def column_matvec(A, x):
 
     This should be implemented using a single loop over the entries of x
     """
-
-    raise NotImplementedError
+    # initialise vector b to be a vector of length m
+    b = np.zeros(np.size(A,0))
+    
+    # j cycles through 1 to n
+    for j in range(1,len(x)+1):
+        
+        # using slice notation to obtain the jth column of A
+        b += x[j-1] * A[:,j-1]
+    
+    # return the final value of b
+    return(b)
 
 
 def timeable_basic_matvec():
