@@ -21,11 +21,24 @@ def basic_matvec(A, x):
 
     :return b: m-dimensional numpy array
     """
-    print("hello world")
-    print("This is a branch")
+    # initialise vector b to be a vector of length m
+    b = np.zeros(np.size(A,0))
 
-    raise NotImplementedError
+    # i cycles through 1 to m
+    for i in range(1,np.size(A,0)+1):
+        sum = 0
 
+        # j cycles through 1 to n
+        for j in range(1,len(x)+1):
+
+            # adds the product of a_ij and x_j into the sum
+            sum += A[i-1][j-1] * x[j-1]
+
+        # update the value of b_i
+        b[i-1] = sum
+    
+    return (b)
+            
 
 def column_matvec(A, x):
     """
