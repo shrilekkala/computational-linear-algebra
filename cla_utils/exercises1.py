@@ -7,7 +7,6 @@ random.seed(1651)
 A0 = random.randn(500, 500)
 x0 = random.randn(500)
 
-
 def basic_matvec(A, x):
     """
     Elementary matrix-vector multiplication.
@@ -72,6 +71,10 @@ def timeable_basic_matvec():
     Doing a matvec example with the basic_matvec that we can
     pass to timeit.
     """
+    m,n = 30, 50
+    random.seed(2020*m + 1066*n)
+    A0 = random.randn(m, n)
+    x0 = random.randn(n)
 
     b = basic_matvec(A0, x0) # noqa
 
@@ -81,6 +84,10 @@ def timeable_column_matvec():
     Doing a matvec example with the column_matvec that we can
     pass to timeit.
     """
+    m,n = 30, 50
+    random.seed(2020*m + 1066*n)
+    A0 = random.randn(m, n)
+    x0 = random.randn(n)
 
     b = column_matvec(A0, x0) # noqa
 
@@ -90,6 +97,10 @@ def timeable_numpy_matvec():
     Doing a matvec example with the builtin numpy matvec so that
     we can pass to timeit.
     """
+    m,n = 30, 50
+    random.seed(2020*m + 1066*n)
+    A0 = random.randn(m, n)
+    x0 = random.randn(n)
 
     b = A0.dot(x0) # noqa
 
@@ -125,6 +136,9 @@ def rank2(u1, u2, v1, v2):
 
     # A will be the matrix product of B x C
     A = B.dot(C)
+    
+    # Check the rank of A
+    print("The rank of A is:", np.linalg.matrix_rank(A))
 
     return A
 
@@ -137,10 +151,60 @@ def rank1pert_inv(u, v):
     :param u: m-dimensional numpy array
     :param v: m-dimensional numpy array
     """
-
-    raise NotImplementedError
-
+    # Calculate uv^* (outer product)
+    outer_uv = np.outer(u,v.conjugate())
+    
+    # Calculate v^*u (innter product)
+    inner_uv = v.conjugate().dot(u)
+    
+    # Calculate A inverse
+    Ainv = np.identity(len(u)) - (1 / (1 + inner_uv) ) * outer_uv
+    
+    # Return A inverse
     return Ainv
+
+
+def timeable_rank1pert_inv():
+    m = 600
+    
+    # Create variables u, v and A
+    random.seed(1234*m)
+    u = 1/np.sqrt(2)*(random.randn(m) + 1j*random.randn(m))
+    v = 1/np.sqrt(2)*(random.randn(m) + 1j*random.randn(m))
+
+    # Calculate uv^* (outer product)
+    outer_uv = np.outer(u,v.conjugate())
+    
+    # Calculate v^*u (innter product)
+    inner_uv = v.conjugate().dot(u)
+    
+    # Calculate A inverse
+    Ainv = np.identity(len(u)) - (1 / (1 + inner_uv) ) * outer_uv  # noqa
+  
+
+def timeable_numpy_inverse():
+    m = 600
+    
+    # Create variables u, v and A
+    random.seed(1234*m)
+    u = 1/np.sqrt(2)*(random.randn(m) + 1j*random.randn(m))
+    v = 1/np.sqrt(2)*(random.randn(m) + 1j*random.randn(m))
+    A = np.eye(m) + np.outer(u, v.conj())
+
+    Ainv = np.linalg.inv(A) # noqa
+
+
+def time_Ainv():
+    """
+    Get some timings for computing A inverse.
+    """
+    print("Timing for rank1pert_inv")
+    print(timeit.Timer(timeable_rank1pert_inv).timeit(number=1))
+
+    print("Timing for numpy inverse")
+    print(timeit.Timer(timeable_numpy_inverse).timeit(number=1))
+    
+time_Ainv()
 
 
 def ABiC(Ahat, xr, xi):
