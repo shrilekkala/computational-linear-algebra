@@ -117,9 +117,13 @@ def rank2(u1, u2, v1, v2):
     :param v1: n-dimensional numpy array
     :param v2: n-dimensional numpy array
     """
+    # create a m x 2 matrix B consisting of u_1 and u_2 stacked together
+    B = np.vstack((u1,u2)).T
+    
+    # create a 2 x n matrix C consisting of the conjugates of v_1 and v_2 stacked together
+    C = np.vstack((v1,v2)).conjugate()
 
-    raise NotImplementedError
-
+    # A will be the matrix product of B x C
     A = B.dot(C)
 
     return A
