@@ -79,7 +79,7 @@ def test_ABiC(m):
     xi = random.randn(m)
 
     Ahat = B_sym
-    Ahat[np.triu_indices(m, 1)] = C_ssym[np.triu_indices(m, 1)]
+    Ahat[np.tril_indices(m, -1)] = C_ssym[np.tril_indices(m, -1)]
     zr, zi = cla_utils.ABiC(Ahat, xr, xi)
 
     z = zr + 1j*zi
