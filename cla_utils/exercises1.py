@@ -36,7 +36,7 @@ def basic_matvec(A, x):
         # update the value of b_i
         b[i-1] = sum
     
-    return (b)
+    return b
             
 
 def column_matvec(A, x):
@@ -217,7 +217,25 @@ def ABiC(Ahat, xr, xi):
     :return zr: m-dimensional numpy arrays containing the real part of z.
     :return zi: m-dimensional numpy arrays containing the imaginary part of z.
     """
-
-    raise NotImplementedError
-
+    # construct matrix B from A hat
+    upper_tri_a = np.triu(Ahat)
+    B = upper_tri_a + upper_tri_a.T - np.diag(np.diag(upper_tri_a))
+    
+    # construct matrix C from A hat
+    lower_tri_a = np.tril(Ahat, -1)
+    C = lower_tri_a - lower_tri_a.T
+    
+    # initialise vector zr and zi to be vectors of length m
+    zr = np.zeros(len(xr))
+    zi = np.zeros(len(xi))
+    
+    # j cycles through 1 to m
+    for j in range(1,len(xr)+1):
+        
+        # using slice notation to obtain the jth column of B and C where required
+        zr += xr[j-1] * B[:,j-1] - xi[j-1] * C[:,j-1]
+        zi += xr[j-1] * C[:,j-1] + xi[j-1] * B[:,j-1]
+    
+    # return the real and imaginary parts of z
     return zr, zi
+
