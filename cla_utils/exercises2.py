@@ -159,10 +159,17 @@ def orthog_space(V):
     :return Q: an lxm-dimensional numpy array whose columns are an \
     orthonormal basis for the subspace orthogonal to U.
     """
+    # Create an orthogonal Projector using the previous function
+    P = orthog_proj(V)
 
-    raise NotImplementedError
+    # Perform QR decomposition on P
+    QQ, R = np.linalg.qr(P)
 
-    return Q
+    # The first n columns of QQ form an orthonormal basis for V
+    # The final m-n columns of QQ form an orthonormal basis for V-complement (null space of V)
+
+    # Return the final m-n columns of QQ
+    return QQ[:,np.size(V,1):]
 
 
 def GS_classical(A):
