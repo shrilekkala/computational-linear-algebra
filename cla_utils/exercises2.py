@@ -44,9 +44,12 @@ def solveQ(Q, b):
 
     :return x: m dimensional array containing the solution.
     """
+    # calculate Q^*
+    Qstar = np.conjugate(Q).T
 
-    raise NotImplementedError
-
+    # calculate x
+    x = Qstar@b
+    
     return x
 
 
