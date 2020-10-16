@@ -71,7 +71,7 @@ def timeable_basic_matvec():
     Doing a matvec example with the basic_matvec that we can
     pass to timeit.
     """
-    m,n = 30, 50
+    m,n = 300, 500
     random.seed(2020*m + 1066*n)
     A0 = random.randn(m, n)
     x0 = random.randn(n)
