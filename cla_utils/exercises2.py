@@ -16,7 +16,21 @@ def orthog_cpts(v, Q):
     :return u: an n-dimensional numpy array containing the coefficients
     """
 
-    raise NotImplementedError
+    # initialise r and u
+    r = v
+    u = np.zeros(np.size(Q,1),dtype=complex)
+
+    # i cycles from 0 to m-1
+    for i in range(0,np.size(Q,1)):
+
+        # Calculate q_i^* v (inner product)
+        qi_v = np.inner(Q[:,i].conjugate(),v)
+        
+        # Store the coefficient in u
+        u[i] = qi_v
+
+        # Recursively update r
+        r = r - qi_v * Q[:,i]
 
     return r, u
 
