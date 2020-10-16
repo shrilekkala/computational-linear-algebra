@@ -49,9 +49,83 @@ def solveQ(Q, b):
 
     # calculate x
     x = Qstar@b
-    
+
     return x
 
+# timeable function solveQ
+def timeable_solveQ(matrix_size):
+    """
+    Doing an example with solveQ that we can
+    pass to timeit.
+    """
+    m = matrix_size
+    random.seed(1500*m)
+    A = random.randn(m, m) + 1j*random.randn(m, m)
+    v = random.randn(m) + 1j*random.randn(m)
+    Q, v = np.linalg.qr(A)
+    
+    x = solveQ(Q, v) #noqa
+    return
+
+# timeable np.linalg.solve function
+def timeable_numpy_solveQ(matrix_size):
+    """
+    Doing a matvec example with the builtin numpy matvec so that
+    we can pass to timeit.
+    """
+    m = matrix_size
+    random.seed(1500*m)
+    A = random.randn(m, m) + 1j*random.randn(m, m)
+    v = random.randn(m) + 1j*random.randn(m)
+    Q, v = np.linalg.qr(A)
+    
+    x = np.linalg.solve(Q, v) #noqa
+    return
+    
+def timeable_solveQ_100():
+    timeable_solveQ(100)
+    return
+
+def timeable_solveQ_200():
+    timeable_solveQ(200)
+    return
+
+def timeable_solveQ_400():
+    timeable_solveQ(400)
+    return
+
+def timeable_numpy_solveQ_100():
+    timeable_numpy_solveQ(100)
+    return
+
+def timeable_numpy_solveQ_200():
+    timeable_numpy_solveQ(200)
+    return
+
+def timeable_numpy_solveQ_400():
+    timeable_numpy_solveQ(400)
+    return
+
+# compare times for the 2 functions for m = 100 , 200 , 400
+def time_solveQ():
+    """
+    Get some timings for the solving Q functions.
+    """
+    print("Timing for solveQ              m = 100")
+    print(timeit.Timer(timeable_solveQ_100).timeit(number=1))
+    print("Timing for numpy.linalg.solve, m = 100")
+    print(timeit.Timer(timeable_numpy_solveQ_100).timeit(number=1))
+    
+    print("Timing for solveQ,             m = 200")
+    print(timeit.Timer(timeable_solveQ_200).timeit(number=1))
+    print("Timing for numpy.linalg.solve, m = 200")
+    print(timeit.Timer(timeable_numpy_solveQ_200).timeit(number=1))
+    
+    print("Timing for solveQ,             m = 400")
+    print(timeit.Timer(timeable_solveQ_400).timeit(number=1))
+    print("Timing for numpy.linalg.solve, m = 400")
+    print(timeit.Timer(timeable_numpy_solveQ_400).timeit(number=1))
+    return
 
 def orthog_proj(Q):
     """
@@ -64,8 +138,12 @@ def orthog_proj(Q):
 
     :return P: an mxm-dimensional numpy array containing the projector
     """
+    # Initialise P
+    P = np.zeros(np.size(Q,0),dtype=complex)
 
-    raise NotImplementedError
+    # i cycles from 0 to m-1
+    for i in range(0, np.size(Q,1)):
+        P  = P + np.outer(Q[:,i],Q[:,i].conjugate())
 
     return P
 
