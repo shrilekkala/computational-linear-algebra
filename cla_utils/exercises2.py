@@ -250,8 +250,17 @@ def GS_modified_get_R(A, k):
 
     :return R: nxn numpy array
     """
+    m, n = A.shape
 
-    raise NotImplementedError
+    # initialise R
+    R = np.eye(n, dtype='complex')
+
+    # edge case
+    R[k-1, k-1] = 1 / np.linalg.norm(A[:, k-1])
+
+    # i cycles from k to n-1
+    for i in range(k,n):
+        R[k-1, i] = - (A[:, k-1].conjugate().T @ A[:,i ]) / R[k-1, k-1]
 
     return R
 
@@ -267,10 +276,10 @@ def GS_modified_R(A):
     """
 
     m, n = A.shape
-    R = np.eye(n)
-    for i in range(1,m):
+    R = np.eye(n, dtype='complex')
+    for i in range(1,n):
         Rk = GS_modified_get_R(A, i)
-        np.dot(A, Rk, out=A)
-        np.dot(R, Rk, out=R)
+        A = A @ Rk
+        R = Rk @ R
     R = np.linalg.inv(R)
     return A, R
