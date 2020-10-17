@@ -105,7 +105,7 @@ def test_GS_modified_L(m, n): #Is this testing GS_modified_R or GS_modified_get_
     A = random.randn(m, m) + 1j*random.randn(m, m)
     A = A[:, 1:n]
 
-    Q, R = cla_utils.GS_modified_L(A)
+    Q, R = cla_utils.GS_modified_R(A)
 
     err = A - np.dot(Q, R)
 
