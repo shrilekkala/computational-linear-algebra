@@ -277,9 +277,9 @@ def GS_modified_R(A):
 
     m, n = A.shape
     R = np.eye(n, dtype='complex')
-    for i in range(1,n):
+    for i in range(1,n+1):
         Rk = GS_modified_get_R(A, i)
         A = A @ Rk
-        R = Rk @ R
+        R = R @ Rk
     R = np.linalg.inv(R)
     return A, R
