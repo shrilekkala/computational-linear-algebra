@@ -260,8 +260,10 @@ def GS_modified_get_R(A, k):
 
     # i cycles from k to n-1
     for i in range(k,n):
-        R[k-1, i] = - (A[:, k-1].conjugate().T @ A[:,i ]) / R[k-1, k-1]
-
+        
+        # Calculate R_(k-1)(i)
+        R[k-1, i] = - (A[:, k-1].conjugate().T /np.linalg.norm(A[:, k-1]) @ A[:,i ]) * R[k-1, k-1]
+        
     return R
 
 def GS_modified_R(A):
