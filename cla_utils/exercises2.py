@@ -1,5 +1,5 @@
 import numpy as np
-
+import numpy.random as random
 
 def orthog_cpts(v, Q):
     """
@@ -236,6 +236,37 @@ def GS_modified(A):
 
     return Q, R
 
+def test_mutual_orthogonality():
+    m = 600
+    n = 450
+    
+    random.seed(1705*m + 1248*n)
+
+    # artificially construct a basis with good linear independence
+    A = random.randn(m, m) + 1j*random.randn(m, m)
+    U, _ = np.linalg.qr(A)
+    A = random.randn(m, m) + 1j*random.randn(m, m)
+    V, _ = np.linalg.qr(A)
+    
+    # change the parameter to test using large values in matrices
+    D = np.diag(1.0 + 50*random.rand(m))
+    A = np.dot(U, np.dot(D, V))
+    A = A[:, 0:n]
+
+    Qc, Rc = GS_classical(A)
+    Qm, Rm = GS_modified(A)
+    
+    ZeroN = np.zeros((n, n),dtype='complex')
+    
+    # print(Qc.conjugate().T @ Qm - Qm.conjugate().T @ Qc)
+    
+    # Norm of Qm^* Qc - Qc^* Qm (as a measure of mutual orthogonality)
+    print(np.linalg.norm(Qc.conjugate().T @ Qm - Qm.conjugate().T @ Qc - ZeroN))
+    
+    return Qc, Rc, Qm, Rm
+
+test_mutual_orthogonality()
+
 
 def GS_modified_get_R(A, k):
     """
@@ -263,7 +294,7 @@ def GS_modified_get_R(A, k):
         
         # Calculate R_(k-1)(i)
         R[k-1, i] = - (A[:, k-1].conjugate().T /np.linalg.norm(A[:, k-1]) @ A[:,i ]) * R[k-1, k-1]
-        
+
     return R
 
 def GS_modified_R(A):
