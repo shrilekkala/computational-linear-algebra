@@ -197,7 +197,7 @@ def GS_classical(A):
     for j in range(1, n):
 
         # using slice notation instead of the inner FOR loop
-        R[:j-1, j] = Q[:, :j-1].T @ A[:, j]
+        R[:j-1, j] = Q[:, :j-1].conjugate().T @ A[:, j]
         v = A[:, j] - Q[:, :j-1] @ R[:j-1, j]
 
         # update the matrices R and Q iteratively
@@ -216,6 +216,9 @@ def GS_modified(A):
     :return Q: mxn numpy array
     :return R: nxn numpy array
     """
+    # set m and n from A
+    m, n = A.shape
+
     # initialise Q and R
     R = np.zeros((n, n),dtype='complex')
     Q = np.zeros((m, n),dtype='complex')
@@ -224,9 +227,12 @@ def GS_modified(A):
 
     # i cycles from 0 to n-1
     for i in range (0, n):
-        R[i, i]
+        R[i, i] = np.linalg.norm(V[:, i])
+        Q[:, i] = V[:, i] / R[i, i]
 
-    raise NotImplementedError
+        # using slice notation instead of the inner FOR loop
+        R[i, i+1:] = A[:, i+1:].conjugate().T @ Q[:,i]
+        V[:, i+1:] = V[:, i+1:] - np.outer(Q[:, i], R[i, i+1:].T)
 
     return Q, R
 
