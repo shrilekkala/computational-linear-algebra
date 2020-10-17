@@ -201,7 +201,7 @@ def GS_classical(A):
         v = A[:, j] - Q[:, :j-1] @ R[:j-1, j]
 
         # update the matrices R and Q iteratively
-        R[j, j] = np.linalg.norm(v) ** 2
+        R[j, j] = np.linalg.norm(v)
         Q[:, j] = v / R[j, j]
 
     return Q, R
@@ -216,6 +216,15 @@ def GS_modified(A):
     :return Q: mxn numpy array
     :return R: nxn numpy array
     """
+    # initialise Q and R
+    R = np.zeros((n, n),dtype='complex')
+    Q = np.zeros((m, n),dtype='complex')
+
+    V = A.copy()
+
+    # i cycles from 0 to n-1
+    for i in range (0, n):
+        R[i, i]
 
     raise NotImplementedError
 
