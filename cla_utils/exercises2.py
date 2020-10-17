@@ -182,8 +182,27 @@ def GS_classical(A):
     :return Q: mxn numpy array
     :return R: nxn numpy array
     """
+    # set m and n from A
+    m, n = A.shape
 
-    raise NotImplementedError
+    # initialise Q and R
+    R = np.zeros((n, n),dtype='complex')
+    Q = np.zeros((m, n),dtype='complex')
+
+    # j = 0 case
+    R[0, 0] = np.linalg.norm(A[:, 0])
+    Q[:, 0] = A[:,0] / R[0,0] 
+
+    # j cycles from 1 to n-1
+    for j in range(1, n):
+
+        # using slice notation instead of the inner FOR loop
+        R[:j-1, j] = Q[:, :j-1].T @ A[:, j]
+        v = A[:, j] - Q[:, :j-1] @ R[:j-1, j]
+
+        # update the matrices R and Q iteratively
+        R[j, j] = np.linalg.norm(v) ** 2
+        Q[:, j] = v / R[j, j]
 
     return Q, R
 
