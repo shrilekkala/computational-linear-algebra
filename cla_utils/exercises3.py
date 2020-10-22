@@ -15,12 +15,24 @@ def householder(A, kmax=None):
     """
 
     m, n = A.shape
+
     if kmax is None:
         kmax = n
 
-    raise NotImplementedError
+    # k cycles from 1 to n
+    for k in range(1, n+1):
 
-    return R
+        x = A[k-1: m+1, k-1]
+
+        # initialise e_1 of length m-k+1
+        e_1 = np.eye(np.size(x,0))[:,0]
+
+        v_k = np.sign(x[0]) * np.linalg.norm(x) * e_1 + x
+        v_k = v_k / np.linalg.norm(v_k)
+
+
+        A[k-1: m+1, k-1: n+1] = A[k-1: m+1, k-1: n+1]  - 2 * np.outer(v_k, v_k) @ A[k-1: m+1, k-1: n+1]
+    return A
 
 
 def householder_solve(A, b):
