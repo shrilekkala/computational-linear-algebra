@@ -63,6 +63,7 @@ def householder_solve(A, b):
     # initialise x
     x = np.zeros((m,k))
 
+    # solve the upper triangular system Rx = Q^* b
     x = scipy.linalg.solve_triangular(R[:, :m], R[:, m:])
 
     return x
@@ -108,7 +109,19 @@ def householder_ls(A, b):
 
     :return x: an n-dimensional numpy array
     """
+    m, n= A.shape
+    
+    # construct augmented matrix Ahat
+    A_hat = np.hstack((A, b[:, None]))
 
-    raise NotImplementedError
+    # use housholder to computer Q and R
+    A_hat_householder = householder(A_hat, n)
+
+    # extract R and Q^* b using slice notation
+    R = A_hat_householder[:n, :n]
+    Q_star_b = A_hat_householder[:n, n:]
+
+    # solve the upper triangular system  Rx= Q^* b
+    x = scipy.linalg.solve_triangular(R[:, :m], Q_star_b)
 
     return x
