@@ -56,7 +56,18 @@ def cond(A):
 
     :param ncond: the condition number
     """
+    # compute the eigenvalues of A^* A
+    evals = np.linalg.eigvals(A.conjugate().T @ A)
 
-    raise NotImplementedError
+    # find the largest and smallest eigenvalue of A^* A
+    lambda_max =  max(evals)
+    lambda_min = min(evals)
 
+    # compute the operator norms of A and A inverse
+    operator_A = np.sqrt(lambda_max)
+    operator_A_inv = np.sqrt(1 / lambda_min)
+
+    # compute the condition number of A
+    ncond = operator_A * operator_A_inv
+    
     return ncond
