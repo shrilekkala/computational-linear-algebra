@@ -19,6 +19,7 @@ def operator_2_norm(A):
     return o2norm
 
 def verify_ineq(m, n):
+    # generate random matrix A and random vector x
     A = random.randn(m, n)
     x = random.randn(n, 1)
 
@@ -30,6 +31,22 @@ def verify_ineq(m, n):
 
 # check if the inequality is satisfied for particular m, n
 verify_ineq(20, 7)
+
+
+def verify_thm(l, m, n):
+    # generate random matrices A and B
+    A = random.randn(l, m)
+    B = random.randn(m, n)
+
+    # check if the inequality in the theorem is satisfied
+    if operator_2_norm(A@B) <= operator_2_norm(A) * operator_2_norm(B):
+        print("Inequality satisfied")
+    else:
+        print("Inequality not satisfied")
+
+# check if the Theorem is satisfied for particular l, m, n
+verify_thm(64, 32, 16)
+
 
 def cond(A):
     """
