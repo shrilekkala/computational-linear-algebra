@@ -1,6 +1,6 @@
 import numpy as np
 
-
+# testing if my git is working (on new computer)
 def randomQ(m):
     """
     Produce a random orthogonal mxm matrix.
