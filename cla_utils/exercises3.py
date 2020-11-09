@@ -58,7 +58,6 @@ def householder_solve(A, b):
 
     # pass A hat to householder function with kmax = m
     R = householder(A_hat, m)
-    print(np.shape(R), "R")
 
     # initialise x
     x = np.zeros((m,k))

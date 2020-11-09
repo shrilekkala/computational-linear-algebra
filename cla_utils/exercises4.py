@@ -30,7 +30,7 @@ def verify_ineq(m, n):
         print("Inequality not satisfied")
 
 # check if the inequality is satisfied for particular m, n
-verify_ineq(20, 7)
+### verify_ineq(20, 7)
 
 
 def verify_thm(l, m, n):
@@ -45,7 +45,7 @@ def verify_thm(l, m, n):
         print("Inequality not satisfied")
 
 # check if the Theorem is satisfied for particular l, m, n
-verify_thm(64, 32, 16)
+### verify_thm(64, 32, 16)
 
 
 def cond(A):

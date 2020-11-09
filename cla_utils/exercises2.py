@@ -262,7 +262,7 @@ def test_mutual_orthogonality():
     # print(Qc.conjugate().T @ Qm - Qm.conjugate().T @ Qc)
     
     # Norm of Qm^* Qc - Qc^* Qm (as a measure of mutual orthogonality)
-    print(np.linalg.norm(Qc.conjugate().T @ Qm - Qm.conjugate().T @ Qc - ZeroN))
+    ### print(np.linalg.norm(Qc.conjugate().T @ Qm - Qm.conjugate().T @ Qc - ZeroN))
     
     return Qc, Rc, Qm, Rm
 

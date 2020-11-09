@@ -55,7 +55,7 @@ def backward_stability_householder(m):
     return
 
 m=100
-backward_stability_householder(m)
+### backward_stability_householder(m)
 
 def solve_R(R, b):
     """
@@ -106,7 +106,7 @@ def back_stab_solve_R(m):
     return
 
 m=100
-back_stab_solve_R(m)
+### back_stab_solve_R(m)
 
 
 def back_stab_householder_solve(m):
@@ -135,4 +135,4 @@ def back_stab_householder_solve(m):
     return
 
 m=100
-back_stab_householder_solve(m)
+### back_stab_householder_solve(m)

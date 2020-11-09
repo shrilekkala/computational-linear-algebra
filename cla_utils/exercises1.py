@@ -117,7 +117,7 @@ def time_matvecs():
     print("Timing for numpy matvec")
     print(timeit.Timer(timeable_numpy_matvec).timeit(number=1))
 
-time_matvecs()
+### time_matvecs()
 
 def rank2(u1, u2, v1, v2):
     """
@@ -204,7 +204,7 @@ def time_Ainv():
     print("Timing for numpy inverse")
     print(timeit.Timer(timeable_numpy_inverse).timeit(number=1))
     
-time_Ainv()
+### time_Ainv()
 
 
 def ABiC(Ahat, xr, xi):
