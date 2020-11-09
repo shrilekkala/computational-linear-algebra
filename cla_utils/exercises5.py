@@ -1,5 +1,10 @@
 import numpy as np
 from numpy import random
+import cla_utils
+
+# from exercises3 import householder_solve
+# from exercises4 import cond
+
 
 def randomQ(m):
     """
@@ -91,7 +96,7 @@ def back_stab_solve_R(m):
 
         x = random.randn(m)
         
-        # find exact b
+        # Find exact b
         b = R @ x
 
         # obtain x~ by the back subsitution algorithm
@@ -111,4 +116,23 @@ def back_stab_householder_solve(m):
 
     :param m: the matrix dimension parameter.
     """
-    raise NotImplementedError
+    # Generate random m x m matrix A and vector x
+    A = random.randn(m, m)
+    x = random.randn(m, 1)
+
+    # Find exact b
+    b = A @ x
+
+    # Obtain x~ by the householder_solve function (Ex 3)
+    x_tilde = cla_utils.householder_solve(A,b)
+
+    # Obtain the condition number for this problem (also the condition number of A)
+    kappa = cla_utils.cond(A)
+
+    print("(Householder) Backward error is : ", np.linalg.norm(x-x_tilde) / np.linalg.norm(x))
+    print("The condition number is", kappa)
+    print("Backward error / condition number is", (np.linalg.norm(x-x_tilde) / ((np.linalg.norm(x)) * kappa)))
+    return
+
+m=100
+back_stab_householder_solve(m)
