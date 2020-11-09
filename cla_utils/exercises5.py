@@ -1,15 +1,16 @@
 import numpy as np
+from numpy import random
 
-# testing if my git is working (on new computer)
 def randomQ(m):
     """
     Produce a random orthogonal mxm matrix.
 
     :param m: the matrix dimension parameter.
-    
+
     :return Q: the mxm numpy array containing the orthogonal matrix.
     """
-    Q, R = linalg.qr(random.randn(m, m))
+    Q, R = np.linalg.qr(random.randn(m, m))
+
     return Q
 
 
@@ -18,12 +19,12 @@ def randomR(m):
     Produce a random upper triangular mxm matrix.
 
     :param m: the matrix dimension parameter.
-    
+
     :return R: the mxm numpy array containing the upper triangular matrix.
     """
-    
+
     A = random.randn(m, m)
-    return numpy.triu(A)
+    return np.triu(A)
 
 
 def backward_stability_householder(m):
@@ -38,12 +39,22 @@ def backward_stability_householder(m):
         Q1 = randomQ(m)
         R1 = randomR(m)
 
-        raise NotImplementedError
+        A = Q1 @ R1
 
+        Q2, R2 = np.linalg.qr(A)
+
+        print("Norm of Q2 - Q1 is : ", np.linalg.norm(Q2-Q1))
+        print("Norm of R2 - R1 is : ", np.linalg.norm(R2-R1))
+        print("Norm of A - Q1R2 is : ", np.linalg.norm(A-Q2@R2))
+    
+    return
+
+m=100
+backward_stability_householder(m)
 
 def solve_R(R, b):
     """
-    Solve the system Rx=b where R is an mxm upper triangular matrix 
+    Solve the system Rx=b where R is an mxm upper triangular matrix
     and b is an m dimensional vector.
 
     :param A: an mxm-dimensional numpy array
@@ -51,7 +62,7 @@ def solve_R(R, b):
 
     :param x: an m-dimensional numpy array
     """
-                     
+
     raise NotImplementedError
 
 
