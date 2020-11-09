@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.random as random
+import timeit
 
 def orthog_cpts(v, Q):
     """
@@ -286,14 +287,10 @@ def GS_modified_get_R(A, k):
     # initialise R
     R = np.eye(n, dtype='complex')
 
-    # edge case
+    # edge case 
     R[k-1, k-1] = 1 / np.linalg.norm(A[:, k-1])
 
-    # i cycles from k to n-1
-    for i in range(k,n):
-        
-        # Calculate R_(k-1)(i)
-        R[k-1, i] = - (A[:, k-1].conjugate().T /np.linalg.norm(A[:, k-1]) @ A[:,i ]) * R[k-1, k-1]
+    R[k-1, k-1:n] = - (A[:, k-1].conjugate().T /np.linalg.norm(A[:, k-1]) @ A[:,k-1:n]) * R[k-1, k-1]
 
     return R
 
