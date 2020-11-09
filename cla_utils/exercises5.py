@@ -85,10 +85,23 @@ def back_stab_solve_R(m):
     """
     # repeat the experiment a few times to capture typical behaviour
     for k in range(20):
+        # create random matrices R and x
         A = random.randn(m, m)
-        R = np.triu(A)
+        Q, R = np.linalg.qr(A)
 
-        raise NotImplementedError
+        x = random.randn(m)
+        
+        # find exact b
+        b = R @ x
+
+        # obtain x~ by the back subsitution algorithm
+        x_tilde = solve_R(R,b)
+
+        print("Backward error is : ", np.linalg.norm(x-x_tilde) / np.linalg.norm(x))
+    return
+
+m=100
+back_stab_solve_R(m)
 
 
 def back_stab_householder_solve(m):
