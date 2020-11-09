@@ -119,7 +119,7 @@ def householder_ls(A, b):
 
     # extract R and Q^* b using slice notation
     R = A_hat_householder[:n, :n]
-    Q_star_b = A_hat_householder[:n, n:]
+    Q_star_b = A_hat_householder[:n, n]
 
     # solve the upper triangular system  Rx= Q^* b
     x = scipy.linalg.solve_triangular(R[:, :m], Q_star_b)
