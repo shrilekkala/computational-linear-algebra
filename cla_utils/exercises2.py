@@ -222,18 +222,16 @@ def GS_modified(A):
 
     # initialise Q and R
     R = np.zeros((n, n),dtype=A.dtype)
-    Q = np.zeros((m, n),dtype=A.dtype)
-
-    V = A.copy()
+    Q = A.copy()
 
     # i cycles from 0 to n-1
     for i in range (0, n):
-        R[i, i] = np.linalg.norm(V[:, i])
-        Q[:, i] = V[:, i] / R[i, i]
+        R[i, i] = np.linalg.norm(Q[:, i])
+        Q[:, i] = Q[:, i] / R[i, i]
 
         # using slice notation instead of the inner FOR loop
-        R[i, i+1:] = A[:, i+1:].conjugate().T @ Q[:,i]
-        V[:, i+1:] = V[:, i+1:] - np.outer(Q[:, i], R[i, i+1:].T)
+        R[i, i+1:] = Q[:, i+1:].conjugate().T @ Q[:,i]
+        Q[:, i+1:] = Q[:, i+1:] - np.outer(Q[:, i], R[i, i+1:].T)
 
     return Q, R
 
