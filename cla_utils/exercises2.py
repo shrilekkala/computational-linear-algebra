@@ -19,7 +19,7 @@ def orthog_cpts(v, Q):
 
     # initialise r and u
     r = v
-    u = np.zeros(np.size(Q,1),dtype=complex)
+    u = np.zeros(np.size(Q,1),dtype=v.dtype)
 
     # i cycles from 0 to m-1
     for i in range(0,np.size(Q,1)):
@@ -140,7 +140,7 @@ def orthog_proj(Q):
     :return P: an mxm-dimensional numpy array containing the projector
     """
     # Initialise P
-    P = np.zeros(np.size(Q,0),dtype=complex)
+    P = np.zeros(np.size(Q,0),dtype=Q.dtype)
 
     # i cycles from 0 to m-1
     for i in range(0, np.size(Q,1)):
@@ -187,8 +187,8 @@ def GS_classical(A):
     m, n = A.shape
 
     # initialise Q and R
-    R = np.zeros((n, n),dtype='complex')
-    Q = np.zeros((m, n),dtype='complex')
+    R = np.zeros((n, n),dtype=A.dtype)
+    Q = np.zeros((m, n),dtype=A.dtype)
 
     # j = 0 case
     R[0, 0] = np.linalg.norm(A[:, 0])
@@ -221,8 +221,8 @@ def GS_modified(A):
     m, n = A.shape
 
     # initialise Q and R
-    R = np.zeros((n, n),dtype='complex')
-    Q = np.zeros((m, n),dtype='complex')
+    R = np.zeros((n, n),dtype=A.dtype)
+    Q = np.zeros((m, n),dtype=A.dtype)
 
     V = A.copy()
 
@@ -285,7 +285,7 @@ def GS_modified_get_R(A, k):
     m, n = A.shape
 
     # initialise R
-    R = np.eye(n, dtype='complex')
+    R = np.eye(n, dtype=A.dtype)
 
     # edge case 
     R[k-1, k-1] = 1 / np.linalg.norm(A[:, k-1])
@@ -306,7 +306,7 @@ def GS_modified_R(A):
     """
 
     m, n = A.shape
-    R = np.eye(n, dtype='complex')
+    R = np.eye(n, dtype=A.dtype)
     for i in range(1,n+1):
         Rk = GS_modified_get_R(A, i)
         A = A @ Rk
