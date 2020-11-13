@@ -80,7 +80,7 @@ def householder_qr(A):
     """
     m, n= A.shape
     
-    # create an mxm identity matrix and take the first n rows
+    # create an mxm identity matrix
     I = np.eye(m)
 
     # construct extended array Ahat
@@ -96,6 +96,31 @@ def householder_qr(A):
     # construct Q by transposing Q_star and taking the first n columns
     Q = Q_star.T[:, :n]
     return Q, R
+
+def householder_full_qr(A):
+    """
+    Given a real mxn matrix A, use the Householder transformation to find
+    the full QR factorisation of A.
+    :param A: an mxn-dimensional numpy array
+    :return Q: an mxm-dimensional numpy array
+    :return R: an mxn-dimensional numpy array
+    """
+    m, n= A.shape
+    
+    # create an mxm identity matrix
+    I = np.eye(m)
+
+    # construct extended array Ahat
+    A_hat = np.hstack((A, I))
+
+    # use housholder to computer Q and R
+    A_hat_householder = householder(A_hat, n)
+
+    # extract Q_star and R using slice notation
+    R = A_hat_householder[:, :n]
+    Q_star = A_hat_householder[:, n:]
+
+    return Q_star.T, R
 
 
 def householder_ls(A, b):
