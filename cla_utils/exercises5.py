@@ -54,8 +54,8 @@ def backward_stability_householder(m):
     
     return
 
-m=100
-### backward_stability_householder(m)
+###m=100
+###backward_stability_householder(m)
 
 def solve_R(R, b):
     """
@@ -105,8 +105,8 @@ def back_stab_solve_R(m):
         print("Backward error is : ", np.linalg.norm(x-x_tilde) / np.linalg.norm(x))
     return
 
-m=100
-### back_stab_solve_R(m)
+###m=100
+###back_stab_solve_R(m)
 
 
 def back_stab_householder_solve(m):
@@ -134,5 +134,5 @@ def back_stab_householder_solve(m):
     print("Backward error / condition number is", (np.linalg.norm(x-x_tilde) / ((np.linalg.norm(x)) * kappa)))
     return
 
-m=100
-### back_stab_householder_solve(m)
+###m=100
+###back_stab_householder_solve(m)
