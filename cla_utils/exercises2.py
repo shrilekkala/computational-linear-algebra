@@ -232,7 +232,7 @@ def GS_modified(A):
         # using slice notation instead of the inner FOR loop
         R[i, i+1:] = Q[:, i+1:].conjugate().T @ Q[:,i]
         Q[:, i+1:] = Q[:, i+1:] - np.outer(Q[:, i], R[i, i+1:].T)
-
+    
     return Q, R
 
 def test_mutual_orthogonality():
