@@ -57,7 +57,7 @@ def cond(A):
     :param ncond: the condition number
     """
     # compute the eigenvalues of A^* A
-    evals = np.linalg.eigvals(A.conjugate().T @ A)
+    evals = np.linalg.eigvals(A.T @ A)
 
     # find the largest and smallest eigenvalue of A^* A
     lambda_max =  max(evals)
@@ -69,5 +69,4 @@ def cond(A):
 
     # compute the condition number of A
     ncond = operator_A * operator_A_inv
-    
     return ncond
