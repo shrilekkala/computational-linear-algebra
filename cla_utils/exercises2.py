@@ -175,7 +175,7 @@ def orthog_space(V):
 
 def GS_classical(A):
     """
-    Given an mxn matrix A, compute the QR factorisation by classical
+    Given an mxn matrix A, compute the reduced QR factorisation by classical
     Gram-Schmidt algorithm.
 
     :param A: mxn numpy array
@@ -188,28 +188,26 @@ def GS_classical(A):
 
     # initialise Q and R
     R = np.zeros((n, n),dtype=A.dtype)
-    Q = np.zeros((m, n),dtype=A.dtype)
+    Q = A.copy()
 
-    # j = 0 case
-    R[0, 0] = np.linalg.norm(A[:, 0])
-    Q[:, 0] = A[:,0] / R[0,0] 
+    # j cycles from 0 to n-1
+    for j in range(0, n):
 
-    # j cycles from 1 to n-1
-    for j in range(1, n):
-
-        # using slice notation instead of the inner FOR loop
-        R[:j-1, j] = Q[:, :j-1].conjugate().T @ A[:, j]
-        v = A[:, j] - Q[:, :j-1] @ R[:j-1, j]
+        # if statement to account for the edge case j = 0
+        if j > 0:
+            # using slice notation instead of the inner FOR loop
+            R[:j-1, j] = Q[:, :j-1].conjugate().T @ Q[:, j]
+            Q[:, j] = Q[:, j] - Q[:, :j-1] @ R[:j-1, j]
 
         # update the matrices R and Q iteratively
-        R[j, j] = np.linalg.norm(v)
-        Q[:, j] = v / R[j, j]
+        R[j, j] = np.linalg.norm(Q[:, j])
+        Q[:, j] = Q[:, j] / R[j, j]
 
     return Q, R
 
 def GS_modified(A):
     """
-    Given an mxn matrix A, compute the QR factorisation by modified
+    Given an mxn matrix A, compute the reduced QR factorisation by modified
     Gram-Schmidt algorithm, producing
 
     :param A: mxn numpy array
