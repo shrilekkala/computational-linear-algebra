@@ -32,9 +32,8 @@ def LU_inplace(A):
     m = np.shape(A)[0]
 
     for k in range(m-1):
-        for j in range(k+1,m):
-            A[j,k] = A[j,k] / A[k,k]
-            A[j,k+1:m] = A[j,k+1:m] - A[j,k] * A[k,k+1:m]
+        A[k+1:, k] = A[k+1:, k] / A[k, k]
+        A[k+1:, k+1:] = A[k+1:, k+1:] - np.outer(A[k+1:, k], A[k, k+1:])
 
     return A
 

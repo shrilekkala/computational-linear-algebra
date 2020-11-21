@@ -68,15 +68,15 @@ def solve_R(R, b):
     :param x: an m-dimensional numpy array
     """
     m = np.size(b)
-
     x = np.zeros(m)
+    
     # Edge case
-    x[m-1] = b[m-1] / R[m-1,m-1]
+    x[m-1] = b[m-1] / R[m-1, m-1]
 
     # Iteratively find the other elements of x
-    # i cycles from m-1 to 0
+    # i cycles from m-2 to 0
     for i in range (m-2, -1, -1):
-        x[i] = (b[i] - np.dot(R[i,i+1:m],x[i+1:m+1])) / R[i,i]
+        x[i] = (b[i] - np.dot(R[i, i+1:], x[i+1: ])) / R[i, i]
     
     return x
 
