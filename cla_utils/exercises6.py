@@ -38,8 +38,7 @@ def LU_inplace(A):
     return A
 
 def solve_L(L, b):
-    """
-    Solve systems Lx_i=b_i for x_i with L lower triangular, i=1,2,\ldots,k
+    """Solve systems Lx_i=b_i for x_i with L lower triangular, i = 1, 2 ... ,k
 
     :param L: an mxm-dimensional numpy array, assumed lower triangular
     :param b: an mxk-dimensional numpy array, with ith column containing \
@@ -49,13 +48,24 @@ def solve_L(L, b):
     the solution x_i
 
     """
-                     
-    raise NotImplementedError
+    m, k = np.shape(b)
+    x = np.zeros((m,k))
+
+    # Implementing the forward substitution algorithm in Page 38 of Chapter 4
+
+    # edge case
+    x[0, :] = b[0, :] / L[0, 0]
+
+    # i cycles from 1 to m-1
+    for i in range(1, m):
+        x[i, :] = (b[i, :] - L[i, :i] @ x[: i, :]) / L[i, i]
+
+    return x
 
 
 def solve_U(U, b):
-    """
-    Solve systems Ux_i=b_i for x_i with U upper triangular, i=1,2,\ldots,k
+
+    """Solve systems Ux_i=b_i for x_i with U upper triangular, i = 1,2, ...,k
 
     :param U: an mxm-dimensional numpy array, assumed upper triangular
     :param b: an mxk-dimensional numpy array, with ith column containing \
@@ -65,8 +75,19 @@ def solve_U(U, b):
     the solution x_i
 
     """
-                     
-    raise NotImplementedError
+    m, k = np.shape(b)
+    x = np.zeros((m,k))
+
+    # Using the same algorithm as Ex 3.26 but extending it
+
+    # edge case
+    x[m-1, :] = b[m-1, :] / U[m-1,m-1]
+
+    # i cycles from m-2 to 0
+    for i in range(m-2, -1, -1):
+        x[i, :] = (b[i, :] - U[i, i+1:] @ x[i+1: , :]) / U[i, i]
+
+    return x
 
 
 def inverse_LU(A):
@@ -78,5 +99,21 @@ def inverse_LU(A):
     :return Ainv: an mxm-dimensional numpy array.
 
     """
-                     
-    raise NotImplementedError
+    m = np.shape(A)[0]
+
+    # compute the LU factorisation of A in place
+    LU_inplace(A)
+    i1 = np.tril_indices(m, k=-1)
+    L = np.eye(m)
+    L[i1] = A[i1]
+    U = np.triu(A)
+
+    # find the inverse of L by forward substitution
+    # L Linv = I
+    Linv = solve_L(L, np.eye(m))
+
+    # find the inverse of A by backward substitution
+    # U Ainv = Linv 
+    Ainv = solve_U(U, Linv)
+
+    return Ainv
