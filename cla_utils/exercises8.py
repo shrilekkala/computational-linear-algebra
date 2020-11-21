@@ -46,20 +46,21 @@ def hessenberg_ev(H):
     :return ee: an m dimensional numpy array containing the eigenvalues of H
     :return V: an mxm numpy array whose columns are the eigenvectors of H
     """
-    assert(np.linalg.norm(H[np.tril_indices(m, -1)]) < 1.0e-6)
+    m, n = H.shape
+    assert(m==n)
+    assert(np.linalg.norm(H[np.tril_indices(m, -2)]) < 1.0e-6)
     _, V = np.linalg.eig(H)
     return V
 
 
 def ev(A):
     """
-    Given a matrix A, return the eigenvalues and eigenvectors. This should
+    Given a matrix A, return the eigenvectors of A. This should
     be done by using your functions to reduce to upper Hessenberg
     form, before calling hessenberg_ev (which you should not edit!).
 
     :param A: an mxm numpy array
 
-    :return ee: an m dimensional numpy array containing the eigenvalues of A
     :return V: an mxm numpy array whose columns are the eigenvectors of A
     """
 
