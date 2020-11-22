@@ -141,3 +141,21 @@ def det_LUP(A):
     detA = detL * detU / detP
 
     return detA
+
+def ex4_13():
+    I = np.eye(10)
+    e3 = I[:,2]
+    e9 = I[:,8]
+    A = I + np.outer(e3, e9.conjugate())
+    
+    # In place LU decomposition without pivoting
+    for k in range(m-1):
+        A[k+1:, k] = A[k+1:, k] / A[k, k]
+        A[k+1:, k+1:] = A[k+1:, k+1:] - np.outer(A[k+1:, k], A[k, k+1:])
+
+    i1 = np.tril_indices(10, k=-1)
+    L = np.eye(10)
+    L[i1] = A[i1]
+    U = np.triu(A)
+
+    return A,L,U
