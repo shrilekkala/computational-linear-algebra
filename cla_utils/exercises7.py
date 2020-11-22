@@ -8,8 +8,29 @@ def perm(p, i, j):
 
     :param p: an m-dimensional numpy array of integers.
     """
+    """
+    m = p.size
+    P = np.zeros((m, m))
 
-    raise NotImplementedError
+    # convert float array to integer array
+    p = p.astype(int)
+
+
+    for i in range(m):
+        P[p[i], i] = 1
+
+    
+    Pij = np.eye(m)
+    Pij[[j, i]] = Pij[[i, j]]
+    
+    # retrun a vector of indices
+    p1 = np.zeros(p)
+    p1  Pij @ P
+    """
+
+    # swap the ith element and the jth element of the vector of indices p
+    p[i], p[j] = p[j], p[i]
+
 
 
 def LUP_inplace(A):
