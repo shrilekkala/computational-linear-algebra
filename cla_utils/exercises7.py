@@ -85,6 +85,39 @@ def solve_LUP(A, b):
     
     return x
 
+
+def LUP_inplace_n(A):
+    """
+    Same as LUP_inplace, except return n instead of p
+
+    :return n: the number of row exchanges performed in the algorithm
+    """
+    m = np.shape(A)[0]
+    n = 0
+
+    for k in range(m-1):
+
+        # select the index of the element with largest magnitude in A[k:, k]
+        i = np.absolute(A[k: , k]).argmax(axis = 0)
+        i = i + k
+
+        # increase n by 1 if a row exchange is made
+        if i != k:
+            n = n + 1
+
+        # swap elements k:m of columns i and k
+        A[[i, k], k: ] = A[[k, i], k: ]
+
+        # swap elements 1:k-1 of columns i and k
+        A[[i, k], :k] = A[[k, i], :k]
+
+        # Gaussian elimination "in-place" algorithm
+        A[k+1:, k] = A[k+1:, k] / A[k, k]
+        A[k+1:, k+1:] = A[k+1:, k+1:] - np.outer(A[k+1:, k], A[k, k+1:])                 
+
+    return n
+
+
 def det_LUP(A):
     """
     Find the determinant of A using LUP factorisation.
@@ -93,5 +126,18 @@ def det_LUP(A):
 
     :return detA: floating point number, the determinant.
     """
-                     
-    raise NotImplementedError
+    # compute the LUP factorisation of A in place
+    n = LUP_inplace_n(A)
+    
+    # determinant of P is the (-1) to the power of the number of row exchanges of P
+    detP = (- 1) ** n
+
+    # determinant of L is the product of 1s
+    detL = 1
+
+    # determinant of U is the product of the diagonal elements of U
+    detU = A.diagonal().prod()          
+
+    detA = detL * detU / detP
+
+    return detA
