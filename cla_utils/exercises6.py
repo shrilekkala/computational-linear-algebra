@@ -35,7 +35,6 @@ def LU_inplace(A):
         A[k+1:, k] = A[k+1:, k] / A[k, k]
         A[k+1:, k+1:] = A[k+1:, k+1:] - np.outer(A[k+1:, k], A[k, k+1:])
 
-    return A
 
 def solve_L(L, b):
     """Solve systems Lx_i=b_i for x_i with L lower triangular, i = 1, 2 ... ,k
@@ -48,8 +47,8 @@ def solve_L(L, b):
     the solution x_i
 
     """
-    m, k = np.shape(b)
-    x = np.zeros((m,k))
+    m = np.shape(b)[0]
+    x = np.zeros(b.shape)
 
     # Implementing the forward substitution algorithm in Page 38 of Chapter 4
 
@@ -75,8 +74,8 @@ def solve_U(U, b):
     the solution x_i
 
     """
-    m, k = np.shape(b)
-    x = np.zeros((m,k))
+    m = np.shape(b)[0]
+    x = np.zeros(b.shape)
 
     # Using the same algorithm as Ex 3.26 but extending it
 
