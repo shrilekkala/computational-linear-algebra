@@ -43,12 +43,32 @@ def LUP_inplace(A):
 
     :param A: an mxm-dimensional numpy array
 
-    :return p: an m-dimensional integer array describing the permutation \
+    :return p: an m-dimensional integer array describing the permutation
     i.e. (Px)[i] = x[p[i]]
     """
-                     
-    raise NotImplementedError
+    m = np.shape(A)[0]
+    p = np.arange(m)
 
+    for k in range(m-1):
+
+        # select the index of the element with largest magnitude in A[k:, k]
+        i = np.absolute(A[k: , k]).argmax(axis = 0)
+        i = i + k
+
+        # swap elements k:m of columns i and k
+        A[[i, k], k: ] = A[[k, i], k: ]
+
+        # swap elements 1:k-1 of columns i and k
+        A[[i, k], :k] = A[[k, i], :k]
+
+        # swap representation of P with representation of Pik @ P as in Ex 4.7
+        perm(p, i, k)
+
+        # Gaussian elimination "in-place" algorithm
+        A[k+1:, k] = A[k+1:, k] / A[k, k]
+        A[k+1:, k+1:] = A[k+1:, k+1:] - np.outer(A[k+1:, k], A[k, k+1:])                 
+
+    return p
 
 def solve_LUP(A, b):
     """
