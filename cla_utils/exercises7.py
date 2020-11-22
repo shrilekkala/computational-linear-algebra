@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.linalg
 
 def perm(p, i, j):
     """
@@ -7,25 +8,6 @@ def perm(p, i, j):
     P_{i,j} exchanges rows i and j.
 
     :param p: an m-dimensional numpy array of integers.
-    """
-    """
-    m = p.size
-    P = np.zeros((m, m))
-
-    # convert float array to integer array
-    p = p.astype(int)
-
-
-    for i in range(m):
-        P[p[i], i] = 1
-
-    
-    Pij = np.eye(m)
-    Pij[[j, i]] = Pij[[i, j]]
-    
-    # retrun a vector of indices
-    p1 = np.zeros(p)
-    p1  Pij @ P
     """
 
     # swap the ith element and the jth element of the vector of indices p
@@ -79,8 +61,29 @@ def solve_LUP(A, b):
 
     :return x: an m-dimensional numpy array
     """
-                     
-    raise NotImplementedError
+    m = b.size
+
+    # compute the LUP factorisation of A in place
+    p = LUP_inplace(A)
+    i1 = np.tril_indices(m, k=-1)
+    L = np.eye(m)
+    L[i1] = A[i1]
+    U = np.triu(A)
+
+    # permute b to Pb
+    Pb = b.copy()
+    for i in range(m):
+        Pb[i] = b[p[i]]
+    
+    # find Ux by forward substitution (from scipy)
+    # (Note to self: can also use solve_L from exercises 5 but need to adjust function to work with 1d b)
+    Ux = scipy.linalg.solve_triangular(L, Pb, lower = True)
+
+    # find x by backward substitution (from scipy)
+    # (Note to self: can also use solve_U from exercises 5 but need to adjust function to work with 1d b)
+    x = scipy.linalg.solve_triangular(U, Ux)
+    
+    return x
 
 def det_LUP(A):
     """
