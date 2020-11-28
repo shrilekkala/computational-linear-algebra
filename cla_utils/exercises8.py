@@ -13,7 +13,6 @@ def Q1AQ1s(A):
 
     # Householder reflector algorithm for first row only
     x = A[:, 0]
-    
     v = np.sign(x[0]) * np.linalg.norm(x) * np.eye(m)[:,0] + x
     v = v / np.linalg.norm(v)
 
@@ -32,8 +31,14 @@ def hessenberg(A):
 
     :param A: an mxm numpy array
     """
+    m = np.shape(A)[0]
 
-    raise NotImplementedError
+    for k in range (m-2):
+        x = A[k+1:, k]
+        v = np.sign(x[0]) * np.linalg.norm(x) * np.eye(m-k-1)[:,0] + x
+        v = v / np.linalg.norm(v)
+        A[k+1:, k:] = A[k+1:, k:] - 2 * np.outer(v, v.conjugate()) @ A[k+1:, k:]
+        A[k:, k+1:] = A[k:, k+1:] - 2 * A[k:, k+1:] @ np.outer(v, v.conjugate())
 
 
 def hessenbergQ(A):
