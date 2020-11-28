@@ -9,9 +9,21 @@ def Q1AQ1s(A):
 
     :return A1: an mxm numpy array
     """
+    m = np.shape(A)[0]
 
-    raise NotImplementedError
+    # Householder reflector algorithm for first row only
+    x = A[:, 0]
+    
+    v = np.sign(x[0]) * np.linalg.norm(x) * np.eye(m)[:,0] + x
+    v = v / np.linalg.norm(v)
 
+    # Apply transformation equivalent to left multplication by Q1 to A
+    A = A  - 2 * np.outer(v, v.conjugate()) @ A 
+
+    # Apply the transformation equivalent to right multiplication by Q1^* to A
+    A1 = A  - 2 * A @ np.outer(v, v.conjugate())
+
+    return A1
 
 def hessenberg(A):
     """
