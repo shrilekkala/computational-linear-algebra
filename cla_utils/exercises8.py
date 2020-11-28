@@ -32,7 +32,6 @@ def hessenberg(A):
     :param A: an mxm numpy array
     """
     m = np.shape(A)[0]
-    B = A.copy()
 
     for k in range (m-2):
         x = A[k+1:, k]
@@ -60,8 +59,23 @@ def hessenbergQ(A):
     
     :return Q: an mxm numpy array
     """
+    m = np.shape(A)[0]
+    I = np.eye(m)
 
-    raise NotImplementedError
+    for k in range (m-2):
+        x = A[k+1:, k]
+        v = np.sign(x[0]) * np.linalg.norm(x) * np.eye(m-k-1)[:,0] + x
+        v = v / np.linalg.norm(v)
+        
+        # transformation equivalent to left multplication
+        A[k+1:, k:] = A[k+1:, k:] - 2 * np.outer(v, v.conjugate()) @ A[k+1:, k:]
+        I[k+1:, k:] = I[k+1:, k:] - 2 * np.outer(v, v.conjugate()) @ I[k+1:, k:]
+
+        # transformation equivalent to right multplication
+        A[k:, k+1:] = A[k:, k+1:] - 2 * A[k:, k+1:] @ np.outer(v, v.conjugate())
+
+    Q = I.conjugate().T
+    return Q
 
 def hessenberg_ev(H):
     """
