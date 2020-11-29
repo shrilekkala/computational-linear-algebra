@@ -110,4 +110,4 @@ def ev(A):
     # find the eigenvectors of the Hessenberg matrix
     V = hessenberg_ev(A)
 
-    return Q.conjugate().T @ V
+    return Q @ V
