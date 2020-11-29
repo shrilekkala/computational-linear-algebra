@@ -38,11 +38,11 @@ def test_hessenbergQ(m):
     A0 = 1.0*A
     Q = cla_utils.hessenbergQ(A)
     assert(np.abs(np.trace(A0) - np.trace(A)) < 1.0e-6)
-    assert(np.abs(np.linalg.norm(A) - np.linalg.norm(A)) < 1.0e-6)
+    assert(np.abs(np.linalg.norm(A0) - np.linalg.norm(A)) < 1.0e-6)
     # check Hessenberg structure
     assert(np.linalg.norm(A[np.tril_indices(m, -2)]) < 1.0e-6)
     # check the Schur factorisation
-    assert(np.linalg.norm(A - np.dot(Q, np.dot(A, np.conj(Q).T))))
+    assert(np.linalg.norm(A0 - np.dot(Q, np.dot(A, np.conj(Q).T))) < 1.0e-6)   
 
 
 @pytest.mark.parametrize('m', [20, 204, 18])
