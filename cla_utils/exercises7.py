@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.linalg
+from cla_utils.exercises6 import solve_L, solve_U
 
 def perm(p, i, j):
     """
@@ -75,15 +76,15 @@ def solve_LUP(A, b):
     for i in range(m):
         Pb[i] = b[p[i]]
     
-    # find Ux by forward substitution (from scipy)
-    # (Note to self: can also use solve_L from exercises 5 but need to adjust function to work with 1d b)
-    Ux = scipy.linalg.solve_triangular(L, Pb, lower = True)
+    # find Ux by forward substitution
+    # (Note to self: Here Pb is adjusted since solve_L requires 2d arrays)
+    Ux = solve_L(A, np.stack((Pb, np.ones(m)), axis = 1), True)
 
-    # find x by backward substitution (from scipy)
+    # find x by backward substitution 
     # (Note to self: can also use solve_U from exercises 5 but need to adjust function to work with 1d b)
-    x = scipy.linalg.solve_triangular(U, Ux)
+    x = solve_U(U, Ux)
     
-    return x
+    return x[:, 0]
 
 
 def LUP_inplace_n(A):
