@@ -36,7 +36,7 @@ def LU_inplace(A):
         A[k+1:, k+1:] = A[k+1:, k+1:] - np.outer(A[k+1:, k], A[k, k+1:])
 
 
-def solve_L(L, b):
+def solve_L(L, b, diag_ones = False):
     """Solve systems Lx_i=b_i for x_i with L lower triangular, i = 1, 2 ... ,k
 
     :param L: an mxm-dimensional numpy array, assumed lower triangular
@@ -47,11 +47,15 @@ def solve_L(L, b):
     the solution x_i
 
     """
-    m = np.shape(b)[0]
+    m, _ = L.shape
     x = np.zeros(b.shape)
 
     # Implementing the forward substitution algorithm in Page 38 of Chapter 4
 
+    # adjust main diagonal depending on whether it should be ones or not
+    if diag_ones:
+        np.fill_diagonal(L, np.ones(m))
+    
     # edge case
     x[0, :] = b[0, :] / L[0, 0]
 
