@@ -72,9 +72,7 @@ def solve_LUP(A, b):
     U = np.triu(A)
 
     # permute b to Pb
-    Pb = b.copy()
-    for i in range(m):
-        Pb[i] = b[p[i]]
+    Pb = b[p]
     
     # find Ux by forward substitution
     # (Note to self: Here Pb is adjusted since solve_L requires 2d arrays)
