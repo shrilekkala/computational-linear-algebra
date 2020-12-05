@@ -115,7 +115,7 @@ def ev(A):
     return Q @ V
 
 def rayleigh_pert(A, v1, lambda1, epsilon):
-    e1 = np.eye((len(v1)))[:,0]
+    e1 = np.ones((len(v1))) / np.sqrt(len(v1))
     x = v1 + e1 * epsilon
 
     # compute the rayleigh quotient of the perturbed vector
@@ -146,4 +146,4 @@ def ex5_13():
     plt.loglog(eps[1:], 50 * eps[1:]**2)
     plt.show()
 
-ex5_13()
+# ex5_13()
