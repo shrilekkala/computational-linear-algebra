@@ -113,7 +113,7 @@ def pow_it(A, x0, tol, maxit, store_iterations = False):
     k = 0
 
     # matrix storing sequence of iterations
-    V = np.zeros((m, maxit + 1), dtype = 'complex')
+    V = np.zeros((m, maxit+1), dtype = 'complex')
     V[:,0] = x0
 
     while True:
@@ -126,16 +126,29 @@ def pow_it(A, x0, tol, maxit, store_iterations = False):
         r = A @ V[:,k] - lambda0 * V[:,k]
         if np.linalg.norm(r) < tol:
             break
-        elif k > maxit:
+        elif k+1 > maxit:
             break
     
     if store_iterations:
-        x = V[:,:k+1]
+        x = V[:,1:k+1]
     else:
         x = V[:,k]
     
     return x, lambda0
 
+def ex5_16():
+    A3 = get_A3()
+    B3 = get_B3()
+    v = np.random.randn(3)
+    x_a, lambda_a = pow_it(A3, v, tol=1.0e-6, maxit=10000, store_iterations = True)
+    x_b, lambda_b = pow_it(B3, v, tol=1.0e-6, maxit=10000, store_iterations = True)
+    print("Error in A3 power iteration: " + str(np.linalg.norm(A3@x_a[:,-1]-lambda_a*x_a[:,-1])))
+    print("Error in B3 power iteration: " + str(np.linalg.norm(B3@x_b[:,-1]-lambda_b*x_b[:,-1])))
+    print("Determinant of A3")
+    print(np.linalg.det(A3))
+    print("Eigenvalues of B3")
+    print(np.linalg.eig(B3)[0])
+    return
 
 def inverse_it(A, x0, mu, tol, maxit, store_iterations = False):
     """
