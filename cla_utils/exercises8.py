@@ -1,4 +1,6 @@
 import numpy as np
+from numpy import random
+import matplotlib.pyplot as plt
 
 def Q1AQ1s(A):
     """
@@ -111,3 +113,37 @@ def ev(A):
     V = hessenberg_ev(A)
 
     return Q @ V
+
+def rayleigh_pert(A, v1, lambda1, epsilon):
+    e1 = np.eye((len(v1)))[:,0]
+    x = v1 + e1 * epsilon
+
+    # compute the rayleigh quotient of the perturbed vector
+    rq = x.T @ A @ x / (x.T @ x)
+
+    err = np.abs(lambda1-rq)
+    return err
+
+def ex5_13():
+    random.seed(123)
+    m = 500
+    A = np.random.randn(m,m)
+    A = A + A.T
+
+    # return the eigenvalues and normalised eigenvectors
+    D, V = np.linalg.eig(A)
+    lambda1 = D[0]
+    v1 = V[:,0]
+
+    N = 100
+    eps = np.linspace(0, 1, num=N)
+    err = np.zeros(N)
+
+    for i in range(N):
+        err[i] = rayleigh_pert(A, v1, lambda1, eps[i])
+
+    plt.loglog(eps[1:], err[1:])
+    plt.loglog(eps[1:], 50 * eps[1:]**2)
+    plt.show()
+
+ex5_13()
