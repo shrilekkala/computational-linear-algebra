@@ -172,8 +172,44 @@ def inverse_it(A, x0, mu, tol, maxit, store_iterations = False):
     estimate, or if store_iterations, an m dimensional numpy array containing
     all the iterates.
     """
+    m = A.shape[0]
+    I = np.eye(m)
+    x0 = x0 / np.linalg.norm(x0)
+    # count number of iterations
+    k = 0
 
-    raise NotImplementedError
+    # matrices storing sequences of iterations
+    V = np.zeros((m, maxit+1), dtype = 'complex')
+    V[:,0] = x0
+    L = np.zeros(maxit+1, dtype = 'complex')
+    L[0] = mu
+    
+
+    while True:
+        w = np.linalg.inv(A - L[k] * I) @ V[:,k]
+        V[:,k+1] = w / np.linalg.norm(w)
+        L[k+1] = V[:,k+1].T @ A @ V[:,k+1]
+        # convert the eigenvalue 1/(lambda - mu) to lambda
+        # L[k+1] = np.reciprocal(L[k+1]) + mu
+
+        k += 1
+
+        # check truncation criteria
+        r = A @ V[:,k] - L[k] * V[:,k]
+        if np.linalg.norm(r) < tol:
+            break
+        elif k+1 > maxit:
+            break
+    
+    if store_iterations:
+        x = V[:,1:k+1]
+        l = L[1:k+1]
+    else:
+        x = V[:,k]
+        l = L[k]
+        
+    print(str(k) + "k")
+    return x, l
 
 
 def rq_it(A, x0, tol, maxit, store_iterations = False):
