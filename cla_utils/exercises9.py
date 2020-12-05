@@ -107,8 +107,33 @@ def pow_it(A, x0, tol, maxit, store_iterations = False):
     the iterates.
     :return lambda0: the final eigenvalue.
     """
+    m = A.shape[0]
 
-    raise(NotImplementedError)
+    # count number of iterations
+    k = 0
+
+    # matrix storing sequence of iterations
+    V = np.zeros((m, maxit + 1), dtype = 'complex')
+    V[:,0] = x0
+
+    while True:
+        w = A @ V[:,k]
+        V[:,k+1] = w / np.linalg.norm(w)
+        lambda0 = V[:,k+1].T @ A @ V[:,k+1]
+
+        # check truncation criteria
+        k += 1
+        r = A @ V[:,k] - lambda0 * V[:,k]
+        if np.linalg.norm(r) < tol:
+            break
+        elif k > maxit:
+            break
+    
+    if store_iterations:
+        x = V[:,:k+1]
+    else:
+        x = V[:,k]
+    
     return x, lambda0
 
 
