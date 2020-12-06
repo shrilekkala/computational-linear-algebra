@@ -252,8 +252,44 @@ def rq_it(A, x0, tol, maxit, store_iterations = False):
     estimate, or if store_iterations, an m dimensional numpy array containing
     all the iterates.
     """
+    m = A.shape[0]
+    I = np.eye(m, dtype = 'complex')
 
-    raise NotImplementedError
+    # normalise the inital vector
+    x0 = x0 / np.linalg.norm(x0)
+
+    # count number of iterations
+    k = 0
+
+    # matrices storing sequences of iterations
+    V = np.zeros((m, maxit+1), dtype = 'complex')
+    V[:,0] = x0
+    L = np.zeros(maxit+1, dtype = 'complex')
+    L[0] = x0.conj().T @ A @ x0
+
+    while True:
+        w = np.linalg.solve(A - L[k] * I, V[:,k])
+        V[:,k+1] = w / np.linalg.norm(w)
+        L[k+1] = V[:,k+1].conjugate().T @ A @ V[:,k+1]
+
+        k += 1
+
+        # check truncation criteria
+        r = A @ V[:,k] - L[k] * V[:,k]
+        if np.linalg.norm(r) < tol:
+            break
+        elif k+1 > maxit:
+            break
+    
+    if store_iterations:
+        x = V[:,1:k+1]
+        l = L[1:k+1]
+    else:
+        x = V[:,k]
+        l = L[k]
+        
+    print("Number of iterations: ", k)
+    return x, l
 
 
 def pure_QR(A, maxit, tol):
