@@ -119,7 +119,7 @@ def pow_it(A, x0, tol, maxit, store_iterations = False):
     while True:
         w = A @ V[:,k]
         V[:,k+1] = w / np.linalg.norm(w)
-        lambda0 = V[:,k+1].T @ A @ V[:,k+1]
+        lambda0 = V[:,k+1].conjugate().T @ A @ V[:,k+1]
 
         # check truncation criteria
         k += 1
@@ -173,8 +173,14 @@ def inverse_it(A, x0, mu, tol, maxit, store_iterations = False):
     all the iterates.
     """
     m = A.shape[0]
-    I = np.eye(m)
+    I = np.eye(m, dtype = 'complex')
+
+    # normalise the inital vector
     x0 = x0 / np.linalg.norm(x0)
+
+    # convert the shift parameter to a real number
+    # mu = np.real(mu)
+
     # count number of iterations
     k = 0
 
@@ -186,17 +192,16 @@ def inverse_it(A, x0, mu, tol, maxit, store_iterations = False):
     
 
     while True:
-        w = np.linalg.inv(A - L[k] * I) @ V[:,k]
+        w = np.linalg.solve(A - L[k] * I, V[:,k])
         V[:,k+1] = w / np.linalg.norm(w)
-        L[k+1] = V[:,k+1].T @ A @ V[:,k+1]
-        # convert the eigenvalue 1/(lambda - mu) to lambda
-        # L[k+1] = np.reciprocal(L[k+1]) + mu
+        L[k+1] = V[:,k+1].conjugate().T @ A @ V[:,k+1]
 
         k += 1
 
         # check truncation criteria
         r = A @ V[:,k] - L[k] * V[:,k]
         if np.linalg.norm(r) < tol:
+            print(L[:k+3])
             break
         elif k+1 > maxit:
             break
@@ -210,6 +215,23 @@ def inverse_it(A, x0, mu, tol, maxit, store_iterations = False):
         
     print(str(k) + "k")
     return x, l
+
+def ex5_18(mu):
+    A3 = get_A3()
+    B3 = get_B3()
+    v = np.random.randn(3)
+    e_a, _ = np.linalg.eig(A3)
+    e_b, _ = np.linalg.eig(B3)
+    x_a, lambda_a = inverse_it(A3, v, mu, tol=1.0e-6, maxit=10000, store_iterations = True)
+    x_b, lambda_b = inverse_it(B3, v, mu, tol=1.0e-6, maxit=10000, store_iterations = True)
+    print("Error in A3 power iteration: ", np.linalg.norm(A3@x_a[:,-1]-lambda_a[-1]*x_a[:,-1]))
+    print("Error in B3 power iteration: ", np.linalg.norm(B3@x_b[:,-1]-lambda_b[-1]*x_b[:,-1]))
+    print("Eigenvalues of A3          : ", e_a)
+    print("Final lambda_a             : ", lambda_a[-1])
+    print("Eigenvalues of B3          : ", e_b)
+    print("Final lambda_b             : ", lambda_b[-1])
+    return
+ex5_18(0.1)
 
 
 def rq_it(A, x0, tol, maxit, store_iterations = False):
