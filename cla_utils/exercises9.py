@@ -1,6 +1,6 @@
 import numpy as np
 import numpy.random as random
-from cla_utils.exercises3 import householder_complex, householder_qr_complex
+from cla_utils.exercises3 import householder_qr_complex
 
 def get_A100():
     """
