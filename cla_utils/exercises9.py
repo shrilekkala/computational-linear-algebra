@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.random as random
+from cla_utils.exercises3 import householder_complex, householder_qr_complex
 
 def get_A100():
     """
@@ -210,7 +211,7 @@ def inverse_it(A, x0, mu, tol, maxit, store_iterations = False):
         x = V[:,k]
         l = L[k]
         
-    print(str(k) + "k")
+    print("Number of iterations: ", k)
     return x, l
 
 def ex5_18(mu):
@@ -228,7 +229,7 @@ def ex5_18(mu):
     print("Eigenvalues of B3          : ", e_b)
     print("Final lambda_b             : ", lambda_b[-1])
     return
-ex5_18(0.1)
+# ex5_18(0.1)
 
 
 def rq_it(A, x0, tol, maxit, store_iterations = False):
@@ -291,6 +292,30 @@ def rq_it(A, x0, tol, maxit, store_iterations = False):
     print("Number of iterations: ", k)
     return x, l
 
+def get_Am(m):
+    random.seed(1111*m)
+    A = random.randn(m, m) + 1j*random.randn(m, m)
+    A = 0.5*(A + np.conj(A).T)
+    return A
+
+def ex5_20(m):
+    A = get_Am(m)
+    x0 = random.randn(m)
+    mu = 0
+    v = np.random.randn(m)
+    e, _ = np.linalg.eig(A)
+    x_inv, lambda_inv = inverse_it(A, v, mu, tol=1.0e-10, maxit=10000, store_iterations = True)
+    x_rq, lambda_rq = rq_it(A, v, tol=1.0e-10, maxit=10000, store_iterations = True)
+    # print("Eigenvalues of A          : ", e)
+    return lambda_inv, lambda_rq
+
+"""
+m=50
+lambda_inv, lambda_rq = ex5_20(m)
+plt.plot(lambda_inv)
+plt.plot(lambda_rq)
+plt.show()
+"""
 
 def pure_QR(A, maxit, tol):
     """
@@ -302,5 +327,29 @@ def pure_QR(A, maxit, tol):
 
     :return Ak: the result
     """
+    Ak = A
+    m, _ = A.shape
+    I = np.eye(m, dtype = 'complex')
 
-    raise NotImplementedError
+    # list storing diagonal elements of each Ak
+    A_diagonal = list(np.diag(Ak))
+
+    # counter
+    k = 0
+
+    while True:
+        # obtain the Q,R decomposition of A implicitly via householder and return the product RQ
+        Ak = householder_qr_complex(Ak, RQ_product = True)
+
+        # add the new diagonal of A to the matrix
+        A_diagonal.append(np.diag(Ak))
+
+        k += 1
+
+        # check convergence criteria (elementwise convergence of diagonals of A)
+        if np.allclose(A_diagonal[-1], A_diagonal[-2], rtol = tol**2):
+            break
+        elif k+1 > maxit:
+            break
+    
+    return Ak
