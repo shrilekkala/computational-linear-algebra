@@ -194,7 +194,7 @@ def householder_complex(A, kmax=None):
         A[:, kmax:][k-1:,:] = A[:, kmax:][k-1:,:] - 2 * np.outer(v_k, v_k.conjugate()) @ A[:, kmax:][k-1:,:]
     return A
 
-def householder_qr_complex(A):
+def householder_qr_complex(A, RQ_product = False):
     """
     Given a complex mxn matrix A, use the Householder transformation to find
     the reduced QR factorisation of A.
@@ -222,4 +222,8 @@ def householder_qr_complex(A):
 
     # construct Q by transposing Q_star and taking the first n columns
     Q = Q_star.conjugate().T[:, :n]
-    return Q, R
+
+    if RQ_product:
+        return R@Q
+    else:
+        return Q, R
