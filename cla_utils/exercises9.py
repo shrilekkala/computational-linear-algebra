@@ -178,9 +178,6 @@ def inverse_it(A, x0, mu, tol, maxit, store_iterations = False):
     # normalise the inital vector
     x0 = x0 / np.linalg.norm(x0)
 
-    # convert the shift parameter to a real number
-    # mu = np.real(mu)
-
     # count number of iterations
     k = 0
 
@@ -201,7 +198,7 @@ def inverse_it(A, x0, mu, tol, maxit, store_iterations = False):
         # check truncation criteria
         r = A @ V[:,k] - L[k] * V[:,k]
         if np.linalg.norm(r) < tol:
-            print(L[:k+3])
+            print(L[:k+2])
             break
         elif k+1 > maxit:
             break
