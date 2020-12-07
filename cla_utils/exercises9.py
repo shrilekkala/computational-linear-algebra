@@ -190,7 +190,7 @@ def inverse_it(A, x0, mu, tol, maxit, store_iterations = False):
     
 
     while True:
-        w = np.linalg.solve(A - L[k] * I, V[:,k])
+        w = np.linalg.solve(A - mu * I, V[:,k])
         V[:,k+1] = w / np.linalg.norm(w)
         L[k+1] = V[:,k+1].conjugate().T @ A @ V[:,k+1]
 
