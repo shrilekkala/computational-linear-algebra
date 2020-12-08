@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.random as random
+import matplotlib.pyplot as plt
 from cla_utils.exercises3 import householder_qr_complex
 
 def get_A100():
@@ -199,7 +200,6 @@ def inverse_it(A, x0, mu, tol, maxit, store_iterations = False):
         # check truncation criteria
         r = A @ V[:,k] - L[k] * V[:,k]
         if np.linalg.norm(r) < tol:
-            print(L[:k+2])
             break
         elif k+1 > maxit:
             break
@@ -211,7 +211,6 @@ def inverse_it(A, x0, mu, tol, maxit, store_iterations = False):
         x = V[:,k]
         l = L[k]
         
-    print("Number of iterations: ", k)
     return x, l
 
 def ex5_18(mu):
@@ -289,33 +288,26 @@ def rq_it(A, x0, tol, maxit, store_iterations = False):
         x = V[:,k]
         l = L[k]
         
-    print("Number of iterations: ", k)
     return x, l
 
+# create a random Hermitian matrix of dimension m x m
 def get_Am(m):
-    random.seed(1111*m)
     A = random.randn(m, m) + 1j*random.randn(m, m)
     A = 0.5*(A + np.conj(A).T)
     return A
 
 def ex5_20(m):
     A = get_Am(m)
-    x0 = random.randn(m)
     mu = 0
     v = np.random.randn(m)
-    e, _ = np.linalg.eig(A)
-    x_inv, lambda_inv = inverse_it(A, v, mu, tol=1.0e-10, maxit=10000, store_iterations = True)
-    x_rq, lambda_rq = rq_it(A, v, tol=1.0e-10, maxit=10000, store_iterations = True)
-    # print("Eigenvalues of A          : ", e)
-    return lambda_inv, lambda_rq
-
-"""
-m=50
-lambda_inv, lambda_rq = ex5_20(m)
-plt.plot(lambda_inv)
-plt.plot(lambda_rq)
-plt.show()
-"""
+    _, lambda_inv = inverse_it(A, v, mu, tol=1.0e-10, maxit=10000, store_iterations = True)
+    _, lambda_rq = rq_it(A, v, tol=1.0e-10, maxit=10000, store_iterations = True)
+    print("Number of iterations for inverse iteration: ", len(lambda_inv))
+    print("Number of iterations for r-q iteration    : ", len(lambda_rq))
+    #print(lambda_inv)
+    #print(lambda_rq)
+    return
+# ex5_20(1000)
 
 def pure_QR(A, maxit, tol):
     """
@@ -353,3 +345,24 @@ def pure_QR(A, maxit, tol):
             break
     
     return Ak
+"""
+# random matrix
+A100 = get_A100()
+# upper triangular
+B100 = get_B100()
+# Hermitian matrix
+C100 = get_C100()
+# Banded Hermitian matrix (middle 3 diagonals)
+D100 = get_D100()
+plt.pcolor(np.abs(np.flip(A100,1)))
+plt.show()
+plt.pcolor(np.abs(np.flip(B100,1)))
+plt.show()
+plt.pcolor(np.abs(np.flip(C100,1)))
+plt.show()
+plt.pcolor(np.abs(np.flip(D100,1)))
+plt.show()
+
+plt.pcolor(np.flip(np.eye(5),0))
+plt.show()
+"""
