@@ -70,7 +70,7 @@ def hessenbergQ(A):
         v = v / np.linalg.norm(v)
 
         # transformation equivalent to left multplication (all columns)
-        A[k+1:, :] = A[k+1:, :] - 2 * np.outer(v, v.conjugate()) @ A[k+1:, :]
+        A[k+1:, k:] = A[k+1:, k:] - 2 * np.outer(v, v.conjugate()) @ A[k+1:, k:]
 
         # transformation equivalent to right multplication (all rows)
         A[:, k+1:] = A[:, k+1:] - 2 * A[:, k+1:] @ np.outer(v, v.conjugate())
