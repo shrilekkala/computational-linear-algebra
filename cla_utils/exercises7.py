@@ -66,21 +66,16 @@ def solve_LUP(A, b):
 
     # compute the LUP factorisation of A in place
     p = LUP_inplace(A)
-    i1 = np.tril_indices(m, k=-1)
-    L = np.eye(m)
-    L[i1] = A[i1]
-    U = np.triu(A)
 
     # permute b to Pb
     Pb = b[p]
     
     # find Ux by forward substitution
     # (Note to self: Here Pb is adjusted since solve_L requires 2d arrays)
-    Ux = solve_L(A, np.stack((Pb, np.ones(m)), axis = 1), True)
+    Ux = solve_L(A.copy(), np.stack((Pb, np.ones(m)), axis = 1), True)
 
     # find x by backward substitution 
-    # (Note to self: can also use solve_U from exercises 5 but need to adjust function to work with 1d b)
-    x = solve_U(U, Ux)
+    x = solve_U(A, Ux)
     
     return x[:, 0]
 
