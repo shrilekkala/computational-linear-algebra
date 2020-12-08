@@ -9,7 +9,7 @@ def get_A100():
 
     :return A: The 100x100 numpy array
     """
-    m = 100
+    m = 50
     random.seed(1111*m)
     A = random.randn(m, m) + 1j*random.randn(m, m)
     return A
@@ -21,7 +21,7 @@ def get_B100():
 
     :return A: The 100x100 numpy array
     """
-    m = 100
+    m = 50
     random.seed(1111*m)
     A = random.randn(m, m) + 1j*random.randn(m, m)
     A[np.tril_indices(m, -2)] = 0
@@ -34,7 +34,7 @@ def get_C100():
 
     :return A: The 100x100 numpy array
     """
-    m = 100
+    m = 50
     random.seed(1111*m)
     A = random.randn(m, m) + 1j*random.randn(m, m)
     A = 0.5*(A + np.conj(A).T)
@@ -47,7 +47,7 @@ def get_D100():
 
     :return A: The 100x100 numpy array
     """
-    m = 100
+    m = 50
     random.seed(1111*m)
     A = random.randn(m, m) + 1j*random.randn(m, m)
     A = 0.5*(A + np.conj(A).T)
@@ -309,17 +309,19 @@ def ex5_20(m):
     return
 # ex5_20(1000)
 
-def pure_QR(A, maxit, tol):
+def pure_QR(A, maxit, tol, its=False):
     """
     For matrix A, apply the QR algorithm and return the result.
 
     :param A: an mxm numpy array
     :param maxit: the maximum number of iterations
     :param tol: termination tolerance
+    :param its: if True, return number of iterations
 
     :return Ak: the result
+    :return k: number of iterations
     """
-    Ak = A
+    Ak = A.copy()
     m, _ = A.shape
     I = np.eye(m, dtype = 'complex')
 
@@ -343,26 +345,103 @@ def pure_QR(A, maxit, tol):
             break
         elif k+1 > maxit:
             break
-    
-    return Ak
-"""
-# random matrix
-A100 = get_A100()
-# upper triangular
-B100 = get_B100()
-# Hermitian matrix
-C100 = get_C100()
-# Banded Hermitian matrix (middle 3 diagonals)
-D100 = get_D100()
-plt.pcolor(np.abs(np.flip(A100,1)))
-plt.show()
-plt.pcolor(np.abs(np.flip(B100,1)))
-plt.show()
-plt.pcolor(np.abs(np.flip(C100,1)))
-plt.show()
-plt.pcolor(np.abs(np.flip(D100,1)))
-plt.show()
+    if its:
+        return Ak, k
+    else:
+        return Ak
 
-plt.pcolor(np.flip(np.eye(5),0))
-plt.show()
-"""
+# pure_QR via inbuilt QR decomposition (for Ex 5.22)
+def pure_QR_inbuilt(A, maxit, tol, its=False):
+    """
+    For matrix A, apply the QR algorithm and return the result.
+
+    :param A: an mxm numpy array
+    :param maxit: the maximum number of iterations
+    :param tol: termination tolerance
+    :param its: if True, return number of iterations
+
+    :return Ak: the result
+    :return k: number of iterations
+    """
+    Ak = A.copy()
+    m, _ = A.shape
+    I = np.eye(m, dtype = 'complex')
+
+    # list storing diagonal elements of each Ak
+    A_diagonal = list(np.diag(Ak))
+
+    # counter
+    k = 0
+
+    while True:
+        # obtain the Q,R decomposition of A implicitly via householder and return the product RQ
+        Q, R = np.linalg.qr(Ak)
+        Ak = R@Q
+        # add the new diagonal of A to the matrix
+        A_diagonal.append(np.diag(Ak))
+
+        k += 1
+        # check convergence criteria (elementwise convergence of diagonals of A)
+        if np.allclose(A_diagonal[-1], A_diagonal[-2], rtol = tol**2):
+            break
+        elif k+1 > maxit:
+            break
+    if its:
+        return Ak, k
+    else:
+        return Ak
+
+def ex5_22():
+    # Obtain the required matrices
+    # random square matrix
+    A100 = get_A100()
+    # upper triangular
+    B100 = get_B100()
+    # Hermitian matrix
+    C100 = get_C100()
+    # Banded Hermitian matrix (middle 3 diagonals)
+    D100 = get_D100()
+
+    # Apply pure QR algorithm to each of these
+    # using built - in pure QR method as it is faster
+    maxiters = 10000
+    Ak100, A100_its = pure_QR_inbuilt(A100, maxit=maxiters, tol=1.0e-5, its=True)
+    print(A100_its)
+    Bk100, B100_its = pure_QR_inbuilt(B100, maxit=maxiters, tol=1.0e-5, its=True)
+    print(B100_its)
+    Ck100, C100_its = pure_QR_inbuilt(C100, maxit=maxiters, tol=1.0e-5, its=True)
+    print(C100_its)
+    Dk100, D100_its = pure_QR_inbuilt(D100, maxit=maxiters, tol=1.0e-5, its=True)
+    print(D100_its)
+
+    # Visualise matrices A100, B100, C100, D100
+    plt.pcolor(np.abs(np.flip(A100,0)))
+    plt.title("A100")
+    plt.show()
+    plt.pcolor(np.abs(np.flip(B100,0)))
+    plt.title("B100")
+    plt.show()
+    plt.pcolor(np.abs(np.flip(C100,0)))
+    plt.title("C100")
+    plt.show()
+    plt.pcolor(np.abs(np.flip(D100,0)))
+    plt.title("D100")
+    plt.show()
+
+    # Visualise the resulting matrices A100, B100, C100, D100
+    plt.pcolor(np.abs(np.flip(Ak100,0)))
+    plt.title("A100, k = " + str(A100_its))
+    plt.show()
+    plt.pcolor(np.abs(np.flip(Bk100,0)))
+    plt.title("B100, k = " + str(B100_its))
+    plt.show()
+    plt.pcolor(np.abs(np.flip(Ck100,0)))
+    plt.title("C100, k = " + str(C100_its))
+    plt.show()
+    plt.pcolor(np.abs(np.flip(Dk100,0)))
+    plt.title("D100, k = " + str(D100_its))
+    plt.show()
+
+    return()
+
+ex5_22()
