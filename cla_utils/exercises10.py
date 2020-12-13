@@ -12,11 +12,26 @@ def arnoldi(A, b, k):
     :param k: integer, the number of iterations
 
     :return Q: an mxk dimensional numpy array containing the orthonormal basis
-    :return H: a (k+1)xk dimensional numpy array containing the upper \
+    :return H: a (k+1)xk dimensional numpy array containing the upper
     Hessenberg matrix
     """
+    m = np.size(b)
+    Q = np.zeros((m, k+1), dtype = 'complex')
+    H = np.zeros((k+1,k), dtype = 'complex')
 
-    raise NotImplementedError
+    Q[:,0] = b / np.linalg.norm(b)
+
+    for n in range(k):
+        v = A @ Q[:,n]
+
+        # projection
+        H[:n+1, n] = Q[:, :n+1].T.conjugate() @ v
+        v = v - Q[:, :n+1] @ H[:n+1, n]
+
+        H[n+1, n] = np.linalg.norm(v)
+        Q[:, n+1] = v / np.linalg.norm(v)
+    
+    return Q, H
 
 
 def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False,
@@ -33,11 +48,11 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False,
     :param return_residuals: logical
 
     :return x: an m dimensional numpy array, the solution
-    :return nits: if converged, the number of iterations required, otherwise \
+    :return nits: if converged, the number of iterations required, otherwise
     equal to -1
-    :return rnorms: nits dimensional numpy array containing the norms of \
+    :return rnorms: nits dimensional numpy array containing the norms of
     the residuals at each iteration
-    :return r: mxnits dimensional numpy array, column k contains residual \
+    :return r: mxnits dimensional numpy array, column k contains residual
     at iteration k
     """
 
@@ -78,3 +93,4 @@ def get_CC100():
     CC100 = np.fromfile('CC100.dat', sep=' ')
     CC100 = CC100.reshape((100, 100))
     return CC100
+
