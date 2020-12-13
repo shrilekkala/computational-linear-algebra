@@ -1,6 +1,6 @@
 import numpy as np
 import numpy.random as random
-
+from cla_utils.exercises3 import householder_ls
 
 def arnoldi(A, b, k):
     """
@@ -55,11 +55,73 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False,
     :return r: mxnits dimensional numpy array, column k contains residual
     at iteration k
     """
-
+    m = np.size(b)
+    
     if x0 is None:
         x0 = b
     
-    raise NotImplementedError
+    # normalise the inital vector
+    x = x0 / np.linalg.norm(x0)
+
+    # count number of iterations
+    k = 0
+
+    # matrix storing the norms of the residuals at each iteration
+    rnorms = np.zeros(maxit)
+    # list storing the residuals at each iteration
+    r = []
+
+    Q = np.zeros((m, maxit+1))
+    H = np.zeros((maxit+1,maxit))
+    Q[:,0] = x / np.linalg.norm(x)
+
+    while True:
+        # Apply step n of Arnoldi
+        v = A @ Q[:,k]
+
+        H[:k+1, k] = Q[:, :k+1].T.conjugate() @ v
+        v = v - Q[:, :k+1] @ H[:k+1, k]
+
+        H[k+1, k] = np.linalg.norm(v)
+        Q[:, k+1] = v / np.linalg.norm(v)
+
+        Hk = H[:(k+1)+1,:(k)+1]
+        Qk = Q[:(k+1),:(k+1)]
+
+        # create basis vector e1
+        e1 = np.eye((k+1)+1)[:,0]
+        
+        # Find y by least squares
+        y = householder_ls(Hk, np.linalg.norm(b) * e1)
+        
+        x = Qk @ y
+
+        # update the residuals and residual norms
+        r.append(Hk @ y - np.linalg.norm(b) * e1)
+        rnorms[k] = np.linalg.norm(r[k])
+
+        k += 1
+
+        # check convergence criteria
+        R = rnorms[k-1]
+        if R < tol:
+            nits = k
+            break
+        elif k+1 > maxit:
+            nits = -1
+            break
+    
+    if return_residual_norms:
+        if return_residuals:
+            return x, nits, rnorms[:nits+1], r
+        else:
+            return x, nits, rnorms[:nits+1]
+    else:
+        if return_residuals:
+            return x, nits, r
+        else:
+            return x, nits
+
 
 
 def get_AA100():
