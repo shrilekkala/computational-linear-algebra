@@ -164,6 +164,34 @@ def extra_householder(Hk, Qhp, k):
 
     return newQ, newR
 
+def extra_givens(Hk, Qhp, k):
+    """
+    Function that applies one extra Givens rotation for a GMRES iteration
+    :inputs: Hk, Qh and k (iteration number)
+    :outputs: the new Q and R
+    """    
+    if k == 0:
+        Qh = np.eye(2)
+    else:
+        Qh = scipy.linalg.block_diag(Qhp, 1)
+    
+    A = Qh.T @ Hk
+    
+    # A[1,0] = 0
+    
+    theta = np.arctan(A[k+1,k] / A[k,k])
+    c = np.cos(theta)
+    s = np.sin(theta)
+    M = np.array([[c, s],[-s, c]])
+    
+    A[k: k+2, :] = M @ A[k: k+2, :]
+    Qhk = scipy.linalg.block_diag(np.eye(k), M)
+    
+    newR = A.copy()
+    newQ = (Qhk @ Qh.T).T
+
+    return newQ, newR
+
 def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False, return_residuals=False):
     """
     For a matrix A, solve Ax=b using the basic GMRES algorithm.
@@ -224,13 +252,8 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False, return_residua
         # create basis vector e1
         e1 = np.eye((k+1)+1)[:,0]
         
-        if k == 0:
-            # Householder QR decomposititon of Hk
-            Qh, Rh = householder_full_qr(Hk.copy())   
-        else:
-            # Apply one extra householder reflector per iteration
-            Qh, Rh = extra_householder(Hk, Qh, k)
-        
+        Qh, Rh = extra_givens(Hk, Qh, k)
+
         Qh_reduced = Qh[:, :k+1]    
         Rh_reduced = Rh[:k+1, :k+1]
         # Find y by least squares
@@ -263,40 +286,6 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False, return_residua
             return x, nits, r
         else:
             return x, nits
-
-"""            
-rQh = householder_full_qr(Hk)[0]
-x = Hk[k-1: m+1, k-1]
-e_1 = np.eye(np.size(x,0))[:,0]
-v = np.sign(x[0]) * np.linalg.norm(x) * e_1 - x
-F = np.eye(k) - 2 * v@v.T.conjugate() / (v.T.conjugate() @ v)
-Qh_k = scipy.linalg.block_diag(np.eye(k+1), F)
-Qh_k
-Qh1 = np.zeros((np.size(x,0),np.size(x,0)))
-Qh1[:np.size(x,0)-1, :np.size(x,0)-1] = Qh
-# Qh1[:, -1] = H[:(k+1)+1,k]
-Qh1[-1, -1] = 1
-Qh2 = Qh_k @ Qh1
-Qh2
-rQh
-###
-m = 20
-A = random.randn(m, m)
-b = random.randn(m)
-x0 = None
-"""
-"""
-Qh1 = np.zeros((k+2,k+2))
-Qh1[:k+1, :k+1] = Qh
-Qh1[-1, -1] = 1
-m, n = Qh1.shape
-kmax = n
-x = Qh1[k+1: m+1, k+1]
-e_1 = np.eye(np.size(x,0))[:,0]
-v_k = np.sign(x[0]) * np.linalg.norm(x) * e_1 + x
-v_k = v_k / np.linalg.norm(v_k)
-Qh1[k+1: m+1, k+1: kmax] = Qh1[k+1: m+1, k+1: kmax]  - 2 * np.outer(v_k, v_k) @ Qh1[k+1: m+1, k+1: kmax]
-"""
 
 
 def get_AA100():
