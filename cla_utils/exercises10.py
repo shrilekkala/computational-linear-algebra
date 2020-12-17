@@ -140,8 +140,31 @@ def householder_full_qr(A):
 
     return Q_star.T, R
 
-def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False,
-          return_residuals=False):
+def extra_householder(Hk, Qhp, k):
+    """
+    Function that applies one extra Householder rotation for a GMRES iteration
+    :inputs: Hk, Qh and k (iteration number)
+    :outputs: the new Q and R
+    """
+    m, n= Hk.shape
+    
+    Qh = scipy.linalg.block_diag(Qhp, 1)
+    H = Qh.T @ Hk
+    
+    x = H[k: m+1, k]
+    I = np.eye(np.size(x,0))
+
+    e_1 = I[:,0]
+    v = np.sign(x[0]) * np.linalg.norm(x) * e_1 + x
+    F = I - 2 * np.outer(v, v.conjugate()) / (v.T.conjugate() @ v)
+    Qhk = scipy.linalg.block_diag(np.eye(k), F)
+    
+    newR = Qhk @ H
+    newQ = Qh @ Qhk.T
+
+    return newQ, newR
+
+def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False, return_residuals=False):
     """
     For a matrix A, solve Ax=b using the basic GMRES algorithm.
 
@@ -201,9 +224,14 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False,
         # create basis vector e1
         e1 = np.eye((k+1)+1)[:,0]
         
-        # Householder QR decomposiiton of Hk
-        Qh, Rh = householder_full_qr(Hk)
-        Qh_reduced = Qh[:, :k+1]
+        if k == 0:
+            # Householder QR decomposititon of Hk
+            Qh, Rh = householder_full_qr(Hk.copy())   
+        else:
+            # Apply one extra householder reflector per iteration
+            Qh, Rh = extra_householder(Hk, Qh, k)
+        
+        Qh_reduced = Qh[:, :k+1]    
         Rh_reduced = Rh[:k+1, :k+1]
         # Find y by least squares
         y = scipy.linalg.solve_triangular(Rh_reduced, Qh_reduced.conjugate().T @ (np.linalg.norm(b) * e1))
@@ -236,6 +264,39 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False,
         else:
             return x, nits
 
+"""            
+rQh = householder_full_qr(Hk)[0]
+x = Hk[k-1: m+1, k-1]
+e_1 = np.eye(np.size(x,0))[:,0]
+v = np.sign(x[0]) * np.linalg.norm(x) * e_1 - x
+F = np.eye(k) - 2 * v@v.T.conjugate() / (v.T.conjugate() @ v)
+Qh_k = scipy.linalg.block_diag(np.eye(k+1), F)
+Qh_k
+Qh1 = np.zeros((np.size(x,0),np.size(x,0)))
+Qh1[:np.size(x,0)-1, :np.size(x,0)-1] = Qh
+# Qh1[:, -1] = H[:(k+1)+1,k]
+Qh1[-1, -1] = 1
+Qh2 = Qh_k @ Qh1
+Qh2
+rQh
+###
+m = 20
+A = random.randn(m, m)
+b = random.randn(m)
+x0 = None
+"""
+"""
+Qh1 = np.zeros((k+2,k+2))
+Qh1[:k+1, :k+1] = Qh
+Qh1[-1, -1] = 1
+m, n = Qh1.shape
+kmax = n
+x = Qh1[k+1: m+1, k+1]
+e_1 = np.eye(np.size(x,0))[:,0]
+v_k = np.sign(x[0]) * np.linalg.norm(x) * e_1 + x
+v_k = v_k / np.linalg.norm(v_k)
+Qh1[k+1: m+1, k+1: kmax] = Qh1[k+1: m+1, k+1: kmax]  - 2 * np.outer(v_k, v_k) @ Qh1[k+1: m+1, k+1: kmax]
+"""
 
 
 def get_AA100():
