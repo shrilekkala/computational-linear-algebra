@@ -176,9 +176,7 @@ def extra_givens(Hk, Qhp, k):
         Qh = scipy.linalg.block_diag(Qhp, 1)
     
     A = Qh.T @ Hk
-    
-    # A[1,0] = 0
-    
+        
     theta = np.arctan(A[k+1,k] / A[k,k])
     c = np.cos(theta)
     s = np.sin(theta)
@@ -228,7 +226,6 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False, return_residua
     # list storing the residuals at each iteration
     r = []
 
-    ###
     Qh = None
     Rh = None
 
@@ -252,19 +249,22 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False, return_residua
         # create basis vector e1
         e1 = np.eye((k+1)+1)[:,0]
         
+        # Obtain the QR factorisation of Hk via Givens rotations
         Qh, Rh = extra_givens(Hk, Qh, k)
 
+        # Find y by least squares
         Qh_reduced = Qh[:, :k+1]    
         Rh_reduced = Rh[:k+1, :k+1]
-        # Find y by least squares
         y = scipy.linalg.solve_triangular(Rh_reduced, Qh_reduced.conjugate().T @ (np.linalg.norm(b) * e1))
         
+        # update the solution
         x = Qk @ y
 
         # update the residuals and residual norms
         r.append(Hk @ y - np.linalg.norm(b) * e1)
         rnorms[k] = np.linalg.norm(r[k])
 
+        # increment the iteration counter
         k += 1
 
         # check convergence criteria
@@ -276,6 +276,7 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False, return_residua
             nits = -1
             break
     
+    # return the variables required
     if return_residual_norms:
         if return_residuals:
             return x, nits, rnorms[:nits+1], r
