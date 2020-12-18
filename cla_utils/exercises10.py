@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.linalg
+import matplotlib.pyplot as plt
 
 def arnoldi(A, b, k):
     """
@@ -274,3 +275,49 @@ def get_CC100():
     CC100 = np.fromfile('CC100.dat', sep=' ')
     CC100 = CC100.reshape((100, 100))
     return CC100
+
+def ex6_5():
+    # get matrices
+    A = get_AA100()
+    B = get_BB100()
+    C = get_CC100()
+
+    # get eigenvalues
+    A_ev = np.linalg.eig(A)[0]
+    B_ev = np.linalg.eig(B)[0]
+    C_ev = np.linalg.eig(C)[0]
+
+    # visualise eigenvalues
+    for i in ((A_ev, "A"), (B_ev, "B"), (C_ev, "C")):
+        plt.title("Eigenvalues of " + i[1])
+        plt.scatter(np.arange(100)+1, i[0], marker='x')
+        plt.show()
+
+    # obtain random v
+    v = np.random.randn(100)
+
+    # perform GMRES
+    A_x, A_nits, A_rnorms, A_r = GMRES(A, v.copy(), maxit=1000, tol=1.0e-3, return_residual_norms=True, return_residuals=True)
+    B_x, B_nits, B_rnorms, B_r = GMRES(B, v.copy(), maxit=1000, tol=1.0e-3, return_residual_norms=True, return_residuals=True)
+    C_x, C_nits, C_rnorms, C_r = GMRES(C, v.copy(), maxit=1000, tol=1.0e-3, return_residual_norms=True, return_residuals=True)
+
+    # print number of iterations for each matrix
+    for i in ((A_nits, "A"), (B_nits, "B"), (C_nits, "C")):
+        print(i[1] + " converges in: " + str(i[0]) + " iterations")
+
+    # plot the residual norms
+    plt.title("Residual Norms")
+    plt.plot(A_rnorms, label="A", ls='--')
+    plt.plot(B_rnorms, label="B", ls='--')
+    plt.plot(C_rnorms, label="C", ls='--')
+    plt.legend()
+    plt.show()
+
+    # plot eigenvalues of A, B and C as roots on the x axis
+    plt.scatter(A_ev, np.zeros(100), marker='x')
+    plt.show()
+    plt.scatter(B_ev, np.zeros(100), marker='x')
+    plt.scatter(C_ev, np.zeros(100), marker='x')
+    plt.show()
+
+ex6_5()
