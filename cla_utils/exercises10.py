@@ -1,6 +1,6 @@
 import numpy as np
-import scipy.linalg
 import matplotlib.pyplot as plt
+from cla_utils.exercises5 import solve_R
 
 def arnoldi(A, b, k):
     """
@@ -95,6 +95,30 @@ def householder_full_qr(A):
 
     return Q_star.T, R
 
+def block_diag(A,B):
+    """
+    Function that takes square matrices or numbers A, B as input
+    and returns the block diagonal matrix = diag(A,B)
+    """
+    if type(A) == np.ndarray:
+        m = A.shape[0]
+    else:
+        m = 1
+        
+    if type(B) == np.ndarray:
+        n = B.shape[0]
+    else:
+        n = 1
+        
+    # dimension of new matrix
+    k = m + n
+    
+    C = np.zeros((k,k))
+    C[:m,:m] = A
+    C[m:,m:] = B
+    
+    return C
+
 def extra_householder(Hk, Qhp, k):
     """
     Function that applies one extra Householder rotation for a GMRES iteration
@@ -103,7 +127,7 @@ def extra_householder(Hk, Qhp, k):
     """
     m, _ = Hk.shape
     
-    Qh = scipy.linalg.block_diag(Qhp, 1)
+    Qh = block_diag(Qhp, 1)
     H = Qh.T @ Hk
     
     x = H[k: m+1, k]
@@ -112,7 +136,7 @@ def extra_householder(Hk, Qhp, k):
     e_1 = I[:,0]
     v = np.sign(x[0]) * np.linalg.norm(x) * e_1 + x
     F = I - 2 * np.outer(v, v.conjugate()) / (v.T.conjugate() @ v)
-    Qhk = scipy.linalg.block_diag(np.eye(k), F)
+    Qhk = block_diag(np.eye(k), F)
     
     newR = Qhk @ H
     newQ = Qh @ Qhk.T
@@ -128,7 +152,7 @@ def extra_givens(Hk, Qhp, k):
     if k == 0:
         Qh = np.eye(2)
     else:
-        Qh = scipy.linalg.block_diag(Qhp, 1)
+        Qh = block_diag(Qhp, 1)
     
     A = Qh.T @ Hk
         
@@ -138,7 +162,7 @@ def extra_givens(Hk, Qhp, k):
     M = np.array([[c, s],[-s, c]])
     
     A[k: k+2, :] = M @ A[k: k+2, :]
-    Qhk = scipy.linalg.block_diag(np.eye(k), M)
+    Qhk = block_diag(np.eye(k), M)
     
     newR = A.copy()
     newQ = (Qhk @ Qh.T).T
@@ -210,7 +234,8 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False, return_residua
         # Find y by least squares
         Qh_reduced = Qh[:, :k+1]    
         Rh_reduced = Rh[:k+1, :k+1]
-        y = scipy.linalg.solve_triangular(Rh_reduced, Qh_reduced.conjugate().T @ (np.linalg.norm(b) * e1))
+        # back substitution
+        y = solve_R(Rh_reduced, Qh_reduced.conjugate().T @ (np.linalg.norm(b) * e1))
         
         # update the solution
         x = Qk @ y
@@ -242,7 +267,6 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False, return_residua
             return x, nits, r
         else:
             return x, nits
-
 
 def get_AA100():
     """
