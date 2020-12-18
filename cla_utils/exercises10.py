@@ -1,7 +1,5 @@
 import numpy as np
-import numpy.random as random
 import scipy.linalg
-# from cla_utils.exercises3 import householder_ls
 
 def arnoldi(A, b, k):
     """
@@ -71,50 +69,6 @@ def householder(A, kmax=None):
         A[:, kmax:][k-1:,:] = A[:, kmax:][k-1:,:] - 2 * np.outer(v_k, v_k) @ A[:, kmax:][k-1:,:]
     return A
 
-def householder_ls_recycle(A, b, Qh = None, Rh = None):
-    """
-    Given a real mxn matrix A and an m dimensional vector b, find the
-    least squares solution to Ax = b.
-
-    :param A: an mxn-dimensional numpy array
-    :param b: an m-dimensional numpy array
-
-    :return x: an n-dimensional numpy array
-    """
-    mm, nn = AA.shape
-    
-    ### construct augmented matrix Ahat
-    ###A_hat = np.hstack((A, b[:, None]))
-
-    # use housholder to computer Q and R
-    if Qh is not None:
-        A_hat = np.hstack((AA, bb[:, None]))
-
-        # apply the last householder reflector to the augmented matrix
-        x = A_hat[mm-1: mm+1, mm-1]
-        e_1 = np.eye(np.size(x,0))[:,0]
-        v_k = np.sign(x[0]) * np.linalg.norm(x) * e_1 + x
-        v_k = v_k / np.linalg.norm(v_k)
-        A_hat[mm-1: mm+1, mm-1: mm] = A_hat[mm-1: mm+1, mm-1: mm]  - 2 * np.outer(v_k, v_k) @ A_hat[mm-1: mm+1, mm-1: mm]
-        A_hat_householder = A_hat
-    else:
-        # construct augmented matrix Ahat
-        A_hat = np.hstack((AA, bb[:, None]))
-
-        A_hat_householder = householder(A_hat, nn)
-
-    # extract R and Q^* b using slice notation
-    R = A_hat_householder[:nn, :nn]
-    Q_star_b = A_hat_householder[:nn, nn]
-
-    Q = Q_star_b.T.conjugate()
-    R = R @ Rh
-
-    # solve the upper triangular system  Rx= Q^* b
-    x = scipy.linalg.solve_triangular(R[:, :mm], Q_star_b)
-
-    return x, Q, R
-
 def householder_full_qr(A):
     """
     Given a real mxn matrix A, use the Householder transformation to find
@@ -146,7 +100,7 @@ def extra_householder(Hk, Qhp, k):
     :inputs: Hk, Qh and k (iteration number)
     :outputs: the new Q and R
     """
-    m, n= Hk.shape
+    m, _ = Hk.shape
     
     Qh = scipy.linalg.block_diag(Qhp, 1)
     H = Qh.T @ Hk
@@ -244,7 +198,7 @@ def GMRES(A, b, maxit, tol, x0=None, return_residual_norms=False, return_residua
         Q[:, k+1] = v / np.linalg.norm(v)
 
         Hk = H[:(k+1)+1,:(k)+1]
-        Qk = Q[:(k+1),:(k+1)]
+        Qk = Q[:,:(k+1)]
 
         # create basis vector e1
         e1 = np.eye((k+1)+1)[:,0]
@@ -320,4 +274,3 @@ def get_CC100():
     CC100 = np.fromfile('CC100.dat', sep=' ')
     CC100 = CC100.reshape((100, 100))
     return CC100
-
