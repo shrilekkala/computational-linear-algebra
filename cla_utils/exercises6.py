@@ -19,7 +19,7 @@ def get_Lk(m, lvec):
     return Lk
 
 
-def LU_inplace(A):
+def LU_inplace(A, printsteps = False):
     """Compute the LU factorisation of A, using the in-place scheme so
     that the strictly lower triangular components of the array contain
     the strictly lower triangular components of L, and the upper
@@ -35,6 +35,11 @@ def LU_inplace(A):
         A[k+1:, k] = A[k+1:, k] / A[k, k]
         A[k+1:, k+1:] = A[k+1:, k+1:] - np.outer(A[k+1:, k], A[k, k+1:])
 
+        if printsteps:
+            print(k)
+            print(A)
+    
+    return
 
 def solve_L(L, b, diag_ones = False):
     """Solve systems Lx_i=b_i for x_i with L lower triangular, i = 1, 2 ... ,k
