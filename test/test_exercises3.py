@@ -39,6 +39,20 @@ def test_householder_qr(m, n):
     # check QR factorisation
     assert(np.linalg.norm(np.dot(Q, R) - A) < 1.0e-6)
 
+@pytest.mark.parametrize('m, n', [(20, 7), (40, 13), (87, 9)])
+def test_householder_full_qr(m, n):
+    random.seed(4732*m + 1238*n)
+    A = random.randn(m, n)
+    A0 = 1*A
+    Q, R = cla_utils.householder_full_qr(A0)
+
+    # check orthonormality
+    assert(np.linalg.norm(np.dot(np.conj(Q.T), Q) - np.eye(m)) < 1.0e-6)
+    # check upper triangular
+    assert(np.allclose(R, np.triu(R)))
+    # check QR factorisation
+    assert(np.linalg.norm(np.dot(Q, R) - A) < 1.0e-6)
+
 
 @pytest.mark.parametrize('m, n', [(3, 2), (20, 7), (40, 13), (87, 9)])
 def test_householder_ls(m, n):
@@ -50,7 +64,30 @@ def test_householder_ls(m, n):
     #!!!change test param to b
 
     #check normal equation residual
-    assert(np.linalg.norm(np.dot(A.T, np.dot(A, x) - b) < 1.0e-6))
+    assert(np.linalg.norm(np.dot(A.T, np.dot(A, x) - b)) < 1.0e-6)
+
+@pytest.mark.parametrize('m', [20, 40, 87])
+def test_householder_complex(m):
+    random.seed(1878*m)
+    A = random.randn(m, m) + 1j*random.randn(m, m) 
+    A0 = 1.0*A  # make a deep copy
+    R = cla_utils.householder_complex(A0)
+    assert(np.allclose(R, np.triu(R)))  # check R is upper triangular
+    assert(np.linalg.norm(np.dot(R.conjugate().T, R) - np.dot(A.conjugate().T, A)) < 1.0e-6)
+
+@pytest.mark.parametrize('m, n', [(20, 7), (40, 13), (87, 9)])
+def test_householder_qr_complex(m, n):
+    random.seed(4732*m + 1238*n)
+    A = random.randn(m, n) + 1j*random.randn(m, n) 
+    A0 = 1*A
+    Q, R = cla_utils.householder_qr_complex(A0)
+
+    # check orthogonality
+    assert(np.linalg.norm(np.dot(Q.conjugate().T, Q) - np.eye(n)) < 1.0e-6)
+    # check upper triangular
+    assert(np.allclose(R, np.triu(R)))
+    # check QR factorisation
+    assert(np.linalg.norm(np.dot(Q, R) - A) < 1.0e-6)
 
 
 if __name__ == '__main__':
